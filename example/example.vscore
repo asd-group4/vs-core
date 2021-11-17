@@ -1,0 +1,77 @@
+enum Season{
+	Spring<"Spring">;
+	Autumn<"Autumn">;
+}
+
+class University{
+	String name;
+	Containment<Department[]> departments;	
+	Containment<Semester[]> semesters;
+}
+
+class Department{
+	Container<University> university;
+	String name;
+	Containment<Course[]> courses;
+	Containment<StudyProgram[]> studyPrograms;
+}
+
+class Semester{
+	int year;
+	Season season;
+}
+
+class Studyprogram{
+	Container<Department> department;
+	String name;
+	String code;
+
+	Containment<YearlyStudyProgram[]> classes;
+}
+
+class YearlyStudyProgram{
+	Container<StudyProgram> studyProgram;
+	Containment<SpecializationGroup[]> specializationGroups;
+	required Semester startSemester;	
+	Containment<CourseContainer> courses;
+}
+
+class SpecializationGroup{
+	String name;
+	required Semester startSemester;
+
+	Containment<Specialization[]> specializations;
+}
+
+class Specialization{
+	Container<SpecializationGroup> specializationGroup;
+	String name;
+	Specialization specializationDependency;
+
+	Containment<CourseContainer> courses;
+}
+
+interface CourseContainer{
+	Containment<SemesterCourses[]> semesters;
+}
+
+class SemesterCourses{
+	Containment<CourseContainer> courseContainer;
+	Semester semester;
+	Course[] mandatoryCourses;
+
+	Container<ElectiveCourseGroup[]> electiveCourseGroup;
+}
+
+class ElectiveCourseGroup{
+	Course[] courses;
+	int requiredFromGroup;
+}
+
+class Course{
+	String name;
+	String code;
+	float points;
+
+	Containment<Department> department;
+}
