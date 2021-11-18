@@ -1,15 +1,15 @@
-import colors from 'colors';
+//import colors from 'colors';
 import { Command } from 'commander';
 import { languageMetaData } from '../language-server/generated/module';
-import { Model } from '../language-server/generated/ast';
-import { createVsCoreServices } from '../language-server/vs-core-module';
-import { extractAstNode } from './cli-util';
-import { generateJavaScript } from './generator';
+//import { EcoreClass, EcoreFeature, EcoreInterface, EcoreRefference} from '../language-server/generated/ast';
+//import { createVsCoreServices } from '../language-server/vs-core-module';
+//import { extractAstNode } from './cli-util';
+//import { generateEcoreClass, generateEcoreFeature, generateEcoreInterface, generateEcoreRefference } from './generator';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
-    const model = await extractAstNode<Model>(fileName, languageMetaData.fileExtensions, createVsCoreServices());
-    const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
-    console.log(colors.green(`JavaScript code generated successfully: ${generatedFilePath}`));
+    //const model = await extractAstNode<EcoreClass>(fileName, languageMetaData.fileExtensions, createVsCoreServices());
+    //const ecoreClass = generateEcoreClass()
+    //console.log(colors.green(`Ecore model generated successfully: ${generatedFilePath}`));
 };
 
 export type GenerateOptions = {

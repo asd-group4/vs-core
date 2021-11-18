@@ -1,5 +1,5 @@
 import { ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
-import { VsCoreAstType, Person } from './generated/ast';
+import { VsCoreAstType } from './generated/ast';
 import { VsCoreServices } from './vs-core-module';
 
 /**
@@ -15,7 +15,6 @@ export class VsCoreValidationRegistry extends ValidationRegistry {
         super(services);
         const validator = services.validation.VsCoreValidator;
         const checks: VsCoreChecks = {
-            Person: validator.checkPersonStartsWithCapital
         };
         this.register(checks, validator);
     }
@@ -26,7 +25,7 @@ export class VsCoreValidationRegistry extends ValidationRegistry {
  */
 export class VsCoreValidator {
 
-    checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
+    checkPersonStartsWithCapital(person: any, accept: ValidationAcceptor): void {
         if (person.name) {
             const firstChar = person.name.substring(0, 1);
             if (firstChar.toUpperCase() !== firstChar) {

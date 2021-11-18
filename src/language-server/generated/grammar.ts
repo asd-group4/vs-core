@@ -25,33 +25,46 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "Model",
+      "name": "EcoreModel",
       "hiddenTokens": [],
       "alternatives": {
         "$type": "Alternatives",
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "persons",
+            "feature": "classes",
             "operator": "+=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "Person"
+                "$refText": "EcoreClass"
               }
             },
             "elements": []
           },
           {
             "$type": "Assignment",
-            "feature": "greetings",
+            "feature": "definitions",
             "operator": "+=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "Greeting"
+                "$refText": "EcoreDefinition"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "enums",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "EcoreEnum"
               }
             },
             "elements": []
@@ -63,19 +76,513 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "Person",
+      "name": "EcoreEnum",
       "hiddenTokens": [],
       "alternatives": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Keyword",
-            "value": "person",
+            "value": "enum",
             "elements": []
           },
           {
             "$type": "Assignment",
             "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "OPENBRACKET"
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "enumEntry",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "EcoreEnumEntry"
+              }
+            },
+            "elements": [],
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "CLOSEBRACKET"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "EcoreEnumEntry",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "<"
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "stringDefinition",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "STRING"
+                      }
+                    },
+                    "cardinality": "?",
+                    "elements": []
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "numberDefinition",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "INT"
+                      }
+                    },
+                    "cardinality": "?"
+                  }
+                ]
+              },
+              {
+                "$type": "Assignment",
+                "feature": "amgiousDefintion",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "STRING"
+                      },
+                      "elements": []
+                    },
+                    {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "INT"
+                      }
+                    }
+                  ]
+                },
+                "elements": []
+              }
+            ]
+          },
+          {
+            "$type": "Keyword",
+            "value": ">"
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "EcoreClass",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "class",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "class"
+                },
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "interface",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "interface"
+                },
+                "elements": []
+              }
+            ]
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "extends",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "parentClass",
+                "operator": "=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$refText": "EcoreClass"
+                  }
+                }
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "OPENBRACKET"
+            }
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "features",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "EcoreFeature"
+                  }
+                },
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "references",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "EcoreReference"
+                  }
+                },
+                "elements": []
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "CLOSEBRACKET"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "EcoreFeature",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "required",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "required"
+            },
+            "cardinality": "?",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "dataType",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "boundDefinnition",
+            "operator": "?=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "BoundDefinition"
+              }
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "featureName",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "BoundDefinition",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ARRAY_START"
+            },
+            "elements": []
+          },
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "startPoint",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "INT"
+                      }
+                    },
+                    "cardinality": "?",
+                    "elements": []
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": ","
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "endPoint",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "INT"
+                      }
+                    },
+                    "cardinality": "?"
+                  }
+                ]
+              },
+              {
+                "$type": "Assignment",
+                "feature": "endPoint",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "INT"
+                  }
+                },
+                "cardinality": "?",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ARRAY_END"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "EcoreReference",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "containmentType",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "Container",
+                  "elements": []
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "Containment"
+                }
+              ]
+            },
+            "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ClassCrossReference"
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "referenceName",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "EcoreDefinition",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "definitionType",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "MODULE_DECLARATION"
+                  },
+                  "elements": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "NS_URI_DECLARATION"
+                  }
+                }
+              ]
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "properties",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -91,40 +598,76 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
     {
       "$type": "ParserRule",
       "parameters": [],
-      "name": "Greeting",
+      "name": "ClassCrossReference",
       "hiddenTokens": [],
       "alternatives": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Keyword",
-            "value": "Hello",
+            "value": "<",
             "elements": []
           },
           {
             "$type": "Assignment",
-            "feature": "person",
+            "feature": "classReference",
             "operator": "=",
             "terminal": {
               "$type": "CrossReference",
               "type": {
-                "$refText": "Person"
-              },
-              "terminal": {
-                "$type": "RuleCall",
-                "arguments": [],
-                "rule": {
-                  "$refText": "ID"
-                }
+                "$refText": "EcoreClass"
               }
             }
           },
           {
+            "$type": "Assignment",
+            "feature": "boundDefinition",
+            "operator": "?=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "BoundDefinition"
+              }
+            },
+            "cardinality": "?"
+          },
+          {
             "$type": "Keyword",
-            "value": "!"
+            "value": ">"
           }
         ]
       }
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "MODULE_DECLARATION",
+      "regex": "'module'"
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "NS_URI_DECLARATION",
+      "regex": "'nsURI'"
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "ARRAY_START",
+      "regex": "\\\\["
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "ARRAY_END",
+      "regex": "\\\\]"
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "OPENBRACKET",
+      "regex": "{"
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "CLOSEBRACKET",
+      "regex": "}"
     },
     {
       "$type": "TerminalRule",
@@ -140,7 +683,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "$type": "TerminalRule",
       "name": "INT",
       "type": "number",
-      "regex": "[0-9]+"
+      "regex": "-?[0-9]+"
     },
     {
       "$type": "TerminalRule",

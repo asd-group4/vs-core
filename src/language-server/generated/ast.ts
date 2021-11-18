@@ -7,47 +7,128 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
-export interface Greeting extends AstNode {
-    readonly $container: Model;
-    person: Reference<Person>
+export interface BoundDefinition extends AstNode {
+    endPoint: boolean
+    startPoint: boolean
 }
 
-export const Greeting = 'Greeting';
+export const BoundDefinition = 'BoundDefinition';
 
-export function isGreeting(item: unknown): item is Greeting {
-    return reflection.isInstance(item, Greeting);
+export function isBoundDefinition(item: unknown): item is BoundDefinition {
+    return reflection.isInstance(item, BoundDefinition);
 }
 
-export interface Model extends AstNode {
-    greetings: Array<Greeting>
-    persons: Array<Person>
+export interface ClassCrossReference extends AstNode {
+    boundDefinition: boolean
+    classReference: Reference<EcoreClass>
 }
 
-export const Model = 'Model';
+export const ClassCrossReference = 'ClassCrossReference';
 
-export function isModel(item: unknown): item is Model {
-    return reflection.isInstance(item, Model);
+export function isClassCrossReference(item: unknown): item is ClassCrossReference {
+    return reflection.isInstance(item, ClassCrossReference);
 }
 
-export interface Person extends AstNode {
-    readonly $container: Model;
+export interface EcoreClass extends AstNode {
+    readonly $container: EcoreModel;
+    class: 'class'
+    features: Array<EcoreFeature>
+    interface: 'interface'
+    name: string
+    parentClass?: Reference<EcoreClass>
+    references: Array<EcoreReference>
+}
+
+export const EcoreClass = 'EcoreClass';
+
+export function isEcoreClass(item: unknown): item is EcoreClass {
+    return reflection.isInstance(item, EcoreClass);
+}
+
+export interface EcoreDefinition extends AstNode {
+    readonly $container: EcoreModel;
+    definitionType: string | string
+    properties: string
+}
+
+export const EcoreDefinition = 'EcoreDefinition';
+
+export function isEcoreDefinition(item: unknown): item is EcoreDefinition {
+    return reflection.isInstance(item, EcoreDefinition);
+}
+
+export interface EcoreEnum extends AstNode {
+    readonly $container: EcoreModel;
+    enumEntry: Array<EcoreEnumEntry>
     name: string
 }
 
-export const Person = 'Person';
+export const EcoreEnum = 'EcoreEnum';
 
-export function isPerson(item: unknown): item is Person {
-    return reflection.isInstance(item, Person);
+export function isEcoreEnum(item: unknown): item is EcoreEnum {
+    return reflection.isInstance(item, EcoreEnum);
 }
 
-export type VsCoreAstType = 'Greeting' | 'Model' | 'Person';
+export interface EcoreEnumEntry extends AstNode {
+    readonly $container: EcoreEnum;
+    amgiousDefintion: boolean
+    name: string
+    numberDefinition: boolean
+    stringDefinition: boolean
+}
 
-export type VsCoreAstReference = 'Greeting:person';
+export const EcoreEnumEntry = 'EcoreEnumEntry';
+
+export function isEcoreEnumEntry(item: unknown): item is EcoreEnumEntry {
+    return reflection.isInstance(item, EcoreEnumEntry);
+}
+
+export interface EcoreFeature extends AstNode {
+    readonly $container: EcoreClass;
+    boundDefinnition: boolean
+    dataType: string
+    featureName: string
+    required: boolean
+}
+
+export const EcoreFeature = 'EcoreFeature';
+
+export function isEcoreFeature(item: unknown): item is EcoreFeature {
+    return reflection.isInstance(item, EcoreFeature);
+}
+
+export interface EcoreModel extends AstNode {
+    classes: Array<EcoreClass>
+    definitions: Array<EcoreDefinition>
+    enums: Array<EcoreEnum>
+}
+
+export const EcoreModel = 'EcoreModel';
+
+export function isEcoreModel(item: unknown): item is EcoreModel {
+    return reflection.isInstance(item, EcoreModel);
+}
+
+export interface EcoreReference extends AstNode {
+    readonly $container: EcoreClass;
+    containmentType: 'Container' | 'Containment'
+    referenceName: string
+}
+
+export const EcoreReference = 'EcoreReference';
+
+export function isEcoreReference(item: unknown): item is EcoreReference {
+    return reflection.isInstance(item, EcoreReference);
+}
+
+export type VsCoreAstType = 'BoundDefinition' | 'ClassCrossReference' | 'EcoreClass' | 'EcoreDefinition' | 'EcoreEnum' | 'EcoreEnumEntry' | 'EcoreFeature' | 'EcoreModel' | 'EcoreReference';
+
+export type VsCoreAstReference = 'ClassCrossReference:classReference' | 'EcoreClass:parentClass';
 
 export class VsCoreAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Greeting', 'Model', 'Person'];
+        return ['BoundDefinition', 'ClassCrossReference', 'EcoreClass', 'EcoreDefinition', 'EcoreEnum', 'EcoreEnumEntry', 'EcoreFeature', 'EcoreModel', 'EcoreReference'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -67,8 +148,11 @@ export class VsCoreAstReflection implements AstReflection {
 
     getReferenceType(referenceId: VsCoreAstReference): string {
         switch (referenceId) {
-            case 'Greeting:person': {
-                return Person;
+            case 'ClassCrossReference:classReference': {
+                return EcoreClass;
+            }
+            case 'EcoreClass:parentClass': {
+                return EcoreClass;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
