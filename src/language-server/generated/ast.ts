@@ -98,9 +98,9 @@ export function isEcoreFeature(item: unknown): item is EcoreFeature {
 }
 
 export interface EcoreModel extends AstNode {
-    classes: Array<EcoreClass>
-    definitions: Array<EcoreDefinition>
-    enums: Array<EcoreEnum>
+    ecoreClasses: Array<EcoreClass>
+    ecoreDefinitions: Array<EcoreDefinition>
+    ecoreEnums: Array<EcoreEnum>
     name: EcoreModelDefinition
     nsUri: boolean
 }

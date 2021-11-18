@@ -5,16 +5,16 @@ hidden(WS, SL_COMMENT, ML_COMMENT)
 EcoreModel: // wtf 
     name=EcoreModelDefinition
     nsUri?=NsUriDeclaration?
-    (classes+=EcoreClass | definitions+=EcoreDefinition | enums+=EcoreEnum)*;
+    (ecoreClasses+=EcoreClass | ecoreDefinitions+=EcoreDefinition | ecoreEnums+=EcoreEnum)*;
 
 EcoreModelDefinition:
-    'name' name=ID ';';
+    'Model' name=ID ';';
 
 NsUriDeclaration: // todo: move from name=STRING to name=UID -> need to fix UID
     'nsUri' name=STRING ';';
 
 EcoreEnum:
-    'enum' name=ID OPENBRACKET
+    'enum' name=ID OPENBRACKET 
     (enumEntry += EcoreEnumEntry)* CLOSEBRACKET;
 
 EcoreEnumEntry:

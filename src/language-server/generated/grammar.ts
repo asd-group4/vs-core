@@ -61,7 +61,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "elements": [
               {
                 "$type": "Assignment",
-                "feature": "classes",
+                "feature": "ecoreClasses",
                 "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
@@ -74,7 +74,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               },
               {
                 "$type": "Assignment",
-                "feature": "definitions",
+                "feature": "ecoreDefinitions",
                 "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
@@ -87,7 +87,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               },
               {
                 "$type": "Assignment",
-                "feature": "enums",
+                "feature": "ecoreEnums",
                 "operator": "+=",
                 "terminal": {
                   "$type": "RuleCall",
@@ -114,7 +114,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
         "elements": [
           {
             "$type": "Keyword",
-            "value": "name",
+            "value": "Model",
             "elements": []
           },
           {
