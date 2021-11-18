@@ -28,49 +28,144 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "name": "EcoreModel",
       "hiddenTokens": [],
       "alternatives": {
-        "$type": "Alternatives",
+        "$type": "Group",
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "classes",
-            "operator": "+=",
+            "feature": "name",
+            "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "EcoreClass"
+                "$refText": "EcoreModelDefinition"
               }
             },
             "elements": []
           },
           {
             "$type": "Assignment",
-            "feature": "definitions",
-            "operator": "+=",
+            "feature": "nsUri",
+            "operator": "?=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "EcoreDefinition"
+                "$refText": "NsUriDeclaration"
               }
             },
-            "elements": []
+            "cardinality": "?"
           },
           {
-            "$type": "Assignment",
-            "feature": "enums",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "EcoreEnum"
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "classes",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "EcoreClass"
+                  }
+                },
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "definitions",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "EcoreDefinition"
+                  }
+                },
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "enums",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "EcoreEnum"
+                  }
+                },
+                "elements": []
               }
-            },
-            "elements": []
+            ],
+            "cardinality": "*"
           }
-        ],
-        "cardinality": "*"
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "EcoreModelDefinition",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "name",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "NsUriDeclaration",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "nsUri",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
+          }
+        ]
       }
     },
     {
@@ -369,7 +464,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "dataType",
+            "feature": "name",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -529,7 +624,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "referenceName",
+            "feature": "name",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -556,27 +651,14 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "definitionType",
+            "feature": "name",
             "operator": "=",
             "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "RuleCall",
-                  "arguments": [],
-                  "rule": {
-                    "$refText": "MODULE_DECLARATION"
-                  },
-                  "elements": []
-                },
-                {
-                  "$type": "RuleCall",
-                  "arguments": [],
-                  "rule": {
-                    "$refText": "NS_URI_DECLARATION"
-                  }
-                }
-              ]
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
             },
             "elements": []
           },
@@ -591,6 +673,10 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "ID"
               }
             }
+          },
+          {
+            "$type": "Keyword",
+            "value": ";"
           }
         ]
       }
@@ -641,16 +727,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
     },
     {
       "$type": "TerminalRule",
-      "name": "MODULE_DECLARATION",
-      "regex": "'module'"
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "NS_URI_DECLARATION",
-      "regex": "'nsURI'"
-    },
-    {
-      "$type": "TerminalRule",
       "name": "ARRAY_START",
       "regex": "\\\\["
     },
@@ -678,6 +754,11 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "$type": "TerminalRule",
       "name": "ID",
       "regex": "[_a-zA-Z][\\\\w_]*"
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "UID",
+      "regex": "([a-zA-z]\\\\.)[a-zA-Z][\\\\w_]*"
     },
     {
       "$type": "TerminalRule",

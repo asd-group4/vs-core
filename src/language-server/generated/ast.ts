@@ -47,7 +47,7 @@ export function isEcoreClass(item: unknown): item is EcoreClass {
 
 export interface EcoreDefinition extends AstNode {
     readonly $container: EcoreModel;
-    definitionType: string | string
+    name: string
     properties: string
 }
 
@@ -86,8 +86,8 @@ export function isEcoreEnumEntry(item: unknown): item is EcoreEnumEntry {
 export interface EcoreFeature extends AstNode {
     readonly $container: EcoreClass;
     boundDefinnition: boolean
-    dataType: string
     featureName: string
+    name: string
     required: boolean
 }
 
@@ -101,6 +101,8 @@ export interface EcoreModel extends AstNode {
     classes: Array<EcoreClass>
     definitions: Array<EcoreDefinition>
     enums: Array<EcoreEnum>
+    name: EcoreModelDefinition
+    nsUri: boolean
 }
 
 export const EcoreModel = 'EcoreModel';
@@ -109,10 +111,21 @@ export function isEcoreModel(item: unknown): item is EcoreModel {
     return reflection.isInstance(item, EcoreModel);
 }
 
+export interface EcoreModelDefinition extends AstNode {
+    readonly $container: EcoreModel;
+    name: string
+}
+
+export const EcoreModelDefinition = 'EcoreModelDefinition';
+
+export function isEcoreModelDefinition(item: unknown): item is EcoreModelDefinition {
+    return reflection.isInstance(item, EcoreModelDefinition);
+}
+
 export interface EcoreReference extends AstNode {
     readonly $container: EcoreClass;
     containmentType: 'Container' | 'Containment'
-    referenceName: string
+    name: string
 }
 
 export const EcoreReference = 'EcoreReference';
@@ -121,14 +134,24 @@ export function isEcoreReference(item: unknown): item is EcoreReference {
     return reflection.isInstance(item, EcoreReference);
 }
 
-export type VsCoreAstType = 'BoundDefinition' | 'ClassCrossReference' | 'EcoreClass' | 'EcoreDefinition' | 'EcoreEnum' | 'EcoreEnumEntry' | 'EcoreFeature' | 'EcoreModel' | 'EcoreReference';
+export interface NsUriDeclaration extends AstNode {
+    name: string
+}
+
+export const NsUriDeclaration = 'NsUriDeclaration';
+
+export function isNsUriDeclaration(item: unknown): item is NsUriDeclaration {
+    return reflection.isInstance(item, NsUriDeclaration);
+}
+
+export type VsCoreAstType = 'BoundDefinition' | 'ClassCrossReference' | 'EcoreClass' | 'EcoreDefinition' | 'EcoreEnum' | 'EcoreEnumEntry' | 'EcoreFeature' | 'EcoreModel' | 'EcoreModelDefinition' | 'EcoreReference' | 'NsUriDeclaration';
 
 export type VsCoreAstReference = 'ClassCrossReference:classReference' | 'EcoreClass:parentClass';
 
 export class VsCoreAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['BoundDefinition', 'ClassCrossReference', 'EcoreClass', 'EcoreDefinition', 'EcoreEnum', 'EcoreEnumEntry', 'EcoreFeature', 'EcoreModel', 'EcoreReference'];
+        return ['BoundDefinition', 'ClassCrossReference', 'EcoreClass', 'EcoreDefinition', 'EcoreEnum', 'EcoreEnumEntry', 'EcoreFeature', 'EcoreModel', 'EcoreModelDefinition', 'EcoreReference', 'NsUriDeclaration'];
     }
 
     isInstance(node: unknown, type: string): boolean {
