@@ -12,7 +12,7 @@ EcoreEnum:
 EcoreEnumEntry:
     name=ID '<' (
         stringDefinition?=STRING? ',' numberDefinition?=INT? | 
-        amgiousDefintion?=(STRING | INT)
+        amgiousDefintion?=(STRING | INT) // todo: check if this can be split in two cases without becomming ambiguous
         ) '>' ';' ;
 
 EcoreClass:
