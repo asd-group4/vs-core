@@ -258,7 +258,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                   {
                     "$type": "Assignment",
                     "feature": "stringDefinition",
-                    "operator": "?=",
+                    "operator": "=",
                     "terminal": {
                       "$type": "RuleCall",
                       "arguments": [],
@@ -266,7 +266,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                         "$refText": "STRING"
                       }
                     },
-                    "cardinality": "?",
                     "elements": []
                   },
                   {
@@ -276,22 +275,21 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                   {
                     "$type": "Assignment",
                     "feature": "numberDefinition",
-                    "operator": "?=",
+                    "operator": "=",
                     "terminal": {
                       "$type": "RuleCall",
                       "arguments": [],
                       "rule": {
                         "$refText": "INT"
                       }
-                    },
-                    "cardinality": "?"
+                    }
                   }
                 ]
               },
               {
                 "$type": "Assignment",
                 "feature": "amgiousDefintion",
-                "operator": "?=",
+                "operator": "=",
                 "terminal": {
                   "$type": "Alternatives",
                   "elements": [
@@ -477,7 +475,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Assignment",
             "feature": "boundDefinnition",
-            "operator": "?=",
+            "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
@@ -485,7 +483,8 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "BoundDefinition"
               }
             },
-            "cardinality": "?"
+            "cardinality": "?",
+            "elements": []
           },
           {
             "$type": "Assignment",
@@ -530,8 +529,8 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "elements": [
                   {
                     "$type": "Assignment",
-                    "feature": "startPoint",
-                    "operator": "?=",
+                    "feature": "lowerBound",
+                    "operator": "=",
                     "terminal": {
                       "$type": "RuleCall",
                       "arguments": [],
@@ -539,7 +538,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                         "$refText": "INT"
                       }
                     },
-                    "cardinality": "?",
                     "elements": []
                   },
                   {
@@ -548,23 +546,22 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                   },
                   {
                     "$type": "Assignment",
-                    "feature": "endPoint",
-                    "operator": "?=",
+                    "feature": "upperBound",
+                    "operator": "=",
                     "terminal": {
                       "$type": "RuleCall",
                       "arguments": [],
                       "rule": {
                         "$refText": "INT"
                       }
-                    },
-                    "cardinality": "?"
+                    }
                   }
                 ]
               },
               {
                 "$type": "Assignment",
-                "feature": "endPoint",
-                "operator": "?=",
+                "feature": "upperBound",
+                "operator": "=",
                 "terminal": {
                   "$type": "RuleCall",
                   "arguments": [],
@@ -572,10 +569,10 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                     "$refText": "INT"
                   }
                 },
-                "cardinality": "?",
                 "elements": []
               }
-            ]
+            ],
+            "cardinality": "?"
           },
           {
             "$type": "RuleCall",
@@ -597,6 +594,17 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
         "elements": [
           {
             "$type": "Assignment",
+            "feature": "required",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "required"
+            },
+            "cardinality": "?",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
             "feature": "containmentType",
             "operator": "=",
             "terminal": {
@@ -612,8 +620,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                   "value": "Containment"
                 }
               ]
-            },
-            "elements": []
+            }
           },
           {
             "$type": "RuleCall",
@@ -621,6 +628,20 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "rule": {
               "$refText": "ClassCrossReference"
             }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "boundDefinnition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "BoundDefinition"
+              }
+            },
+            "cardinality": "?",
+            "elements": []
           },
           {
             "$type": "Assignment",
@@ -708,7 +729,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Assignment",
             "feature": "boundDefinition",
-            "operator": "?=",
+            "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],

@@ -8,8 +8,9 @@
 import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
 export interface BoundDefinition extends AstNode {
-    endPoint: boolean
-    startPoint: boolean
+    readonly $container: EcoreFeature | EcoreReference | ClassCrossReference;
+    lowerBound: number
+    upperBound: number
 }
 
 export const BoundDefinition = 'BoundDefinition';
@@ -19,7 +20,7 @@ export function isBoundDefinition(item: unknown): item is BoundDefinition {
 }
 
 export interface ClassCrossReference extends AstNode {
-    boundDefinition: boolean
+    boundDefinition: BoundDefinition
     classReference: Reference<EcoreClass>
 }
 
@@ -71,10 +72,10 @@ export function isEcoreEnum(item: unknown): item is EcoreEnum {
 
 export interface EcoreEnumEntry extends AstNode {
     readonly $container: EcoreEnum;
-    amgiousDefintion: boolean
+    amgiousDefintion: string | number
     name: string
-    numberDefinition: boolean
-    stringDefinition: boolean
+    numberDefinition: number
+    stringDefinition: string
 }
 
 export const EcoreEnumEntry = 'EcoreEnumEntry';
@@ -85,7 +86,7 @@ export function isEcoreEnumEntry(item: unknown): item is EcoreEnumEntry {
 
 export interface EcoreFeature extends AstNode {
     readonly $container: EcoreClass;
-    boundDefinnition: boolean
+    boundDefinnition: BoundDefinition
     featureName: string
     name: string
     required: boolean
@@ -124,8 +125,10 @@ export function isEcoreModelDefinition(item: unknown): item is EcoreModelDefinit
 
 export interface EcoreReference extends AstNode {
     readonly $container: EcoreClass;
+    boundDefinnition: BoundDefinition
     containmentType: 'Container' | 'Containment'
     name: string
+    required: boolean
 }
 
 export const EcoreReference = 'EcoreReference';

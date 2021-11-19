@@ -7,18 +7,32 @@ import path from 'path';
 export function generateEcoreClass(ecoreClass: EcoreClass): string{
     let ecoreClassXML = "";
 
-    ecoreClassXML += `\n<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${ecoreClass.interface == null? 'abstract="true" interface="true"':''}">`
+    ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${ecoreClass.interface == null? 'abstract="true" interface="true"':''}">`
 
     ecoreClass.features.forEach(feature => ecoreClassXML += generateEcoreFeature(feature));
     ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference));
 
-    ecoreClassXML += "\n</eClassifiers>"
+    ecoreClassXML += "\n\t</eClassifiers>"
 
     return ecoreClassXML
 }
 
 export function generateEcoreFeature(ecoreFeature: EcoreFeature):string{
-    return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreFeature.featureName}" upperBound="-1"
+
+    let upperBound = "";
+    let lowerBound = "";
+
+    if(ecoreFeature.boundDefinnition != undefined){
+        if(ecoreFeature.boundDefinnition.upperBound != undefined) upperBound = `upperBound="${ecoreFeature.boundDefinnition.upperBound}"`
+        if(ecoreFeature.boundDefinnition.lowerBound != undefined) lowerBound = `lowerBound="${ecoreFeature.boundDefinnition.lowerBound}"`
+    }
+
+    if(ecoreFeature.required){
+        console.log(`required feature: ${ecoreFeature.name}`)
+        if(lowerBound == "") lowerBound = 'lowerBound="-1"';
+    }
+
+    return `\n\t\t<eStructuralFeatures xsi:type="ecore:EAttribute" name="${ecoreFeature.featureName}" ${upperBound} ${lowerBound}
         eType="${translate_etype(ecoreFeature.name)}"/>`
 }
 
@@ -35,7 +49,20 @@ export function translate_etype(type: string):string{
 }
 
 export function generateEcoreReference(ecoreReference: EcoreReference):string{
-    return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.name}" upperBound="-1"
+    let upperBound = "";
+    let lowerBound = "";
+
+    if(ecoreReference.boundDefinnition != undefined){
+        if(ecoreReference.boundDefinnition.upperBound != undefined) upperBound = `upperBound="${ecoreReference.boundDefinnition.upperBound}"`
+        if(ecoreReference.boundDefinnition.lowerBound != undefined) lowerBound = `lowerBound="${ecoreReference.boundDefinnition.lowerBound}"`
+    }
+
+    if(ecoreReference.required){
+        console.log(`required feature: ${ecoreReference.name}`)
+        if(lowerBound == "") lowerBound = 'lowerBound="-1"';
+    }
+
+    return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.name}" ${upperBound} ${lowerBound}
         eType="${translate_etype(ecoreReference.name)}" containment="true" />`
 }
 

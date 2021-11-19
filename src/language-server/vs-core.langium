@@ -19,8 +19,8 @@ EcoreEnum:
 
 EcoreEnumEntry:
     name=ID '<' (
-        stringDefinition?=STRING? ',' numberDefinition?=INT? | 
-        amgiousDefintion?=(STRING | INT) // todo: check if this can be split in two cases without becomming ambiguous
+        stringDefinition=STRING ',' numberDefinition=INT | 
+        amgiousDefintion=(STRING | INT) // todo: check if this can be split in two cases without becomming ambiguous
         ) '>' ';' ;
 
 EcoreClass:
@@ -29,20 +29,20 @@ EcoreClass:
     CLOSEBRACKET;
 
 EcoreFeature: // todo: find a way for this to be a reference -> so that we can validate that the input is an existing class 
-    required?='required'? name=ID boundDefinnition?=BoundDefinition? featureName=ID ';';
+    required?='required'? name=ID (boundDefinnition=BoundDefinition?) featureName=ID ';';
 
 BoundDefinition:
-    ARRAY_START (startPoint?=INT? ',' endPoint?=INT? | endPoint?=INT?) ARRAY_END;
+    ARRAY_START (lowerBound=INT ',' upperBound=INT | upperBound=INT)? ARRAY_END;
 
 EcoreReference:
-    containmentType=('Container' | 'Containment') ClassCrossReference
+    required?='required'? containmentType=('Container' | 'Containment') ClassCrossReference (boundDefinnition=BoundDefinition?)
     name=ID ';';
 
 EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MAY I ADD BTW 
     name=ID properties=ID ';';
 
 ClassCrossReference:
-    '<' classReference=[EcoreClass] boundDefinition?=BoundDefinition? '>';
+    '<' classReference=[EcoreClass] boundDefinition=BoundDefinition? '>';
 
 
 //terminal WORD_PERIOD_CONNECTED : /([^\s]+)/;
