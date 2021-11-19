@@ -7,7 +7,7 @@ import path from 'path';
 export function generateEcoreClass(ecoreClass: EcoreClass): string{
     let ecoreClassXML = "";
 
-    ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${ecoreClass.interface == null? 'abstract="true" interface="true"':''}">`
+    ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${ecoreClass.interface == null? 'abstract="true" interface="true"':''}>`
 
     ecoreClass.features.forEach(feature => ecoreClassXML += generateEcoreFeature(feature));
     ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference));
