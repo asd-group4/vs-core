@@ -77,5 +77,9 @@ class Course{
 	String code;
 	float points;
 
+	String[10] bound_test1;
+	String[] bound_test2;
+	String[15,20] bound_test3;
+
 	Containment<Department> department;
 }
