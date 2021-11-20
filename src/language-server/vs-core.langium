@@ -24,8 +24,12 @@ EcoreEnumEntry:
         ) '>' ';' ;
 
 EcoreClass:
-    (class='class'| interface='interface') name=ID ('extends' parentClass=[EcoreClass])? OPENBRACKET 
-    (features+=EcoreFeature | references+=EcoreReference)*
+    (class='class'| interface='interface')
+    name=ID
+    ('extends' parentClass=[EcoreClass])?
+    ('implements' (interfaces+=EcoreClass)*)
+    OPENBRACKET
+        (features+=EcoreFeature | references+=EcoreReference)*
     CLOSEBRACKET;
 
 EcoreFeature: // todo: find a way for this to be a reference -> so that we can validate that the input is an existing class 
