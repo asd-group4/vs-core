@@ -46,7 +46,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Assignment",
             "feature": "nsUri",
-            "operator": "?=",
+            "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
@@ -194,11 +194,47 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
+            "$type": "Assignment",
+            "feature": "instanceTypeName",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "InstanceTypeName"
+              }
+            },
+            "cardinality": "?"
+          },
+          {
             "$type": "RuleCall",
             "arguments": [],
             "rule": {
               "$refText": "OPENBRACKET"
             }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "enumEntry",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "EcoreEnumEntry"
+                  }
+                },
+                "elements": []
+              },
+              {
+                "$type": "Keyword",
+                "value": ","
+              }
+            ],
+            "cardinality": "*"
           },
           {
             "$type": "Assignment",
@@ -210,9 +246,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "rule": {
                 "$refText": "EcoreEnumEntry"
               }
-            },
-            "elements": [],
-            "cardinality": "*"
+            }
           },
           {
             "$type": "RuleCall",
@@ -230,99 +264,17 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "name": "EcoreEnumEntry",
       "hiddenTokens": [],
       "alternatives": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "ID"
-              }
-            },
-            "elements": []
-          },
-          {
-            "$type": "Keyword",
-            "value": "<"
-          },
-          {
-            "$type": "Alternatives",
-            "elements": [
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "stringDefinition",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "STRING"
-                      }
-                    },
-                    "elements": []
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ","
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "numberDefinition",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "INT"
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "$type": "Assignment",
-                "feature": "amgiousDefintion",
-                "operator": "=",
-                "terminal": {
-                  "$type": "Alternatives",
-                  "elements": [
-                    {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "STRING"
-                      },
-                      "elements": []
-                    },
-                    {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "INT"
-                      }
-                    }
-                  ]
-                },
-                "elements": []
-              }
-            ]
-          },
-          {
-            "$type": "Keyword",
-            "value": ">"
-          },
-          {
-            "$type": "Keyword",
-            "value": ";"
+        "$type": "Assignment",
+        "feature": "name",
+        "operator": "=",
+        "terminal": {
+          "$type": "RuleCall",
+          "arguments": [],
+          "rule": {
+            "$refText": "ID"
           }
-        ]
+        },
+        "elements": []
       }
     },
     {
@@ -339,7 +291,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               {
                 "$type": "Assignment",
                 "feature": "class",
-                "operator": "=",
+                "operator": "?=",
                 "terminal": {
                   "$type": "Keyword",
                   "value": "class"
@@ -349,7 +301,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               {
                 "$type": "Assignment",
                 "feature": "interface",
-                "operator": "=",
+                "operator": "?=",
                 "terminal": {
                   "$type": "Keyword",
                   "value": "interface"
@@ -390,6 +342,63 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 }
               }
             ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "implements",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "interfaces",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$refText": "EcoreClass"
+                  }
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": ",",
+                    "elements": []
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "interfaces",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "CrossReference",
+                      "type": {
+                        "$refText": "EcoreClass"
+                      }
+                    }
+                  }
+                ],
+                "cardinality": "*"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "instanceTypeName",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "InstanceTypeName"
+              }
+            },
             "cardinality": "?"
           },
           {
@@ -462,6 +471,36 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
+            "feature": "final",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "final"
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "volatile",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "volatile"
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "transient",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "transient"
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
             "feature": "name",
             "operator": "=",
             "terminal": {
@@ -474,7 +513,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "boundDefinnition",
+            "feature": "boundDefinition",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -587,6 +626,34 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
     {
       "$type": "ParserRule",
       "parameters": [],
+      "name": "InstanceTypeName",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "instanceTypeName",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
       "name": "EcoreReference",
       "hiddenTokens": [],
       "alternatives": {
@@ -602,6 +669,16 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             },
             "cardinality": "?",
             "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "final",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "final"
+            },
+            "cardinality": "?"
           },
           {
             "$type": "Assignment",
@@ -636,7 +713,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "boundDefinnition",
+            "feature": "boundDefinition",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",

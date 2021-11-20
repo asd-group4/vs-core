@@ -4,7 +4,7 @@ hidden(WS, SL_COMMENT, ML_COMMENT)
 
 EcoreModel: // wtf 
     name=EcoreModelDefinition
-    nsUri?=NsUriDeclaration?
+    nsUri=NsUriDeclaration?
     (ecoreClasses+=EcoreClass | ecoreDefinitions+=EcoreDefinition | ecoreEnums+=EcoreEnum)*;
 
 EcoreModelDefinition:
@@ -14,32 +14,38 @@ NsUriDeclaration: // todo: move from name=STRING to name=UID -> need to fix UID
     'nsUri' name=STRING ';';
 
 EcoreEnum:
-    'enum' name=ID OPENBRACKET 
-    (enumEntry += EcoreEnumEntry)* CLOSEBRACKET;
+    'enum' name=ID
+    instanceTypeName=InstanceTypeName?
+    OPENBRACKET 
+        (enumEntry += EcoreEnumEntry ',')*
+        enumEntry += EcoreEnumEntry
+    CLOSEBRACKET;
 
 EcoreEnumEntry:
-    name=ID '<' (
-        stringDefinition=STRING ',' numberDefinition=INT | 
-        amgiousDefintion=(STRING | INT) // todo: check if this can be split in two cases without becomming ambiguous
-        ) '>' ';' ;
+    name=ID;
 
 EcoreClass:
-    (class='class'| interface='interface')
+    (class?='class'| interface?='interface')
     name=ID
     ('extends' parentClass=[EcoreClass])?
-    ('implements' (interfaces+=EcoreClass)*)
+    ('implements' interfaces+=[EcoreClass] (','interfaces+=[EcoreClass])*)?
+    instanceTypeName=InstanceTypeName?
     OPENBRACKET
         (features+=EcoreFeature | references+=EcoreReference)*
     CLOSEBRACKET;
 
 EcoreFeature: // todo: find a way for this to be a reference -> so that we can validate that the input is an existing class 
-    required?='required'? name=ID (boundDefinnition=BoundDefinition?) featureName=ID ';';
+    required?='required'? final?='final'? volatile?='volatile'? transient?='transient'? name=ID (boundDefinition=BoundDefinition?) featureName=ID ';';
 
 BoundDefinition:
     ARRAY_START (lowerBound=INT ',' upperBound=INT | upperBound=INT)? ARRAY_END;
 
+InstanceTypeName: 
+    'instanceTypeName' name=STRING;
+
 EcoreReference:
-    required?='required'? containmentType=('Container' | 'Containment') references=ClassCrossReference (boundDefinnition=BoundDefinition?)
+    required?='required'? final?='final'? containmentType=('Container' | 'Containment') 
+    references=ClassCrossReference (boundDefinition=BoundDefinition?)
     featureName=ID ';';
 
 EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MAY I ADD BTW 

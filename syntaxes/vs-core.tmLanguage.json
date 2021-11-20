@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.vs-core",
-      "match": "\\b(class|Container|Containment|enum|extends|interface|Model|nsUri|required)\\b"
+      "match": "\\b(class|Container|Containment|enum|extends|final|implements|instanceTypeName|interface|Model|nsUri|required|transient|volatile)\\b"
     },
     {
       "name": "keyword.symbol.vs-core",

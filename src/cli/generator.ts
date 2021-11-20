@@ -7,7 +7,7 @@ import path from 'path';
 export function generateEcoreClass(ecoreClass: EcoreClass): string{
     let ecoreClassXML = "";
 
-    ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${ecoreClass.interface == null? 'abstract="true" interface="true"':''}>`
+    ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${!ecoreClass.interface? 'abstract="true" interface="true"':''}>`
 
     ecoreClass.features.forEach(feature => ecoreClassXML += generateEcoreFeature(feature));
     ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference));
@@ -21,18 +21,22 @@ export function generateEcoreFeature(ecoreFeature: EcoreFeature):string{
 
     let upperBound = "";
     let lowerBound = "";
+    let extraFeatures = "";
 
-    if(ecoreFeature.boundDefinnition != undefined){
-        if(ecoreFeature.boundDefinnition.upperBound != undefined) upperBound = `upperBound="${ecoreFeature.boundDefinnition.upperBound}"`
-        if(ecoreFeature.boundDefinnition.lowerBound != undefined) lowerBound = `lowerBound="${ecoreFeature.boundDefinnition.lowerBound}"`
+    if(ecoreFeature.boundDefinition != undefined){
+        if(ecoreFeature.boundDefinition.upperBound != undefined) upperBound = `upperBound="${ecoreFeature.boundDefinition.upperBound}"`
+        if(ecoreFeature.boundDefinition.lowerBound != undefined) lowerBound = `lowerBound="${ecoreFeature.boundDefinition.lowerBound}"`
     }
 
     if(ecoreFeature.required){
-        console.log(`required feature: ${ecoreFeature.name}`)
         if(lowerBound == "") lowerBound = 'lowerBound="-1"';
     }
 
-    return `\n\t\t<eStructuralFeatures xsi:type="ecore:EAttribute" name="${ecoreFeature.featureName}" ${upperBound} ${lowerBound}
+    if(ecoreFeature.final) extraFeatures += 'unsettable="true"'
+    if(ecoreFeature.volatile) extraFeatures += ' volatile="true"'
+    if(ecoreFeature.transient) extraFeatures += ' transient="true"'
+
+    return `\n\t\t<eStructuralFeatures xsi:type="ecore:EAttribute" name="${ecoreFeature.featureName}" ${upperBound} ${lowerBound} ${extraFeatures}
         eType="${translate_etype(ecoreFeature.name)}"/>`
 }
 
@@ -56,13 +60,13 @@ export function generateEcoreReference(ecoreReference: EcoreReference):string{
     let upperBound = "";
     let lowerBound = "";
 
-    if(ecoreReference.boundDefinnition != undefined){
-        if(ecoreReference.boundDefinnition.upperBound != undefined) upperBound = `upperBound="${ecoreReference.boundDefinnition.upperBound}"`
-        if(ecoreReference.boundDefinnition.lowerBound != undefined) lowerBound = `lowerBound="${ecoreReference.boundDefinnition.lowerBound}"`
+    if(ecoreReference.boundDefinition != undefined){
+        if(ecoreReference.boundDefinition.upperBound != undefined) upperBound = `upperBound="${ecoreReference.boundDefinition.upperBound}"`
+        if(ecoreReference.boundDefinition.lowerBound != undefined) lowerBound = `lowerBound="${ecoreReference.boundDefinition.lowerBound}"`
     }
 
     if(ecoreReference.required){
-        if(lowerBound == "") lowerBound = 'lowerBound="-1"';
+        if(lowerBound == "") lowerBound = 'lowerBound="1"';
     }
 
     return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.featureName}" ${upperBound} ${lowerBound}
@@ -70,17 +74,11 @@ export function generateEcoreReference(ecoreReference: EcoreReference):string{
 }
 
 export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
-    /*
-    <eClassifiers xsi:type="ecore:EEnum" name="Season">
-    <eLiterals name="SPRING" literal="spring"/>
-    <eLiterals name="FALL" value="1" literal="fall"/>
-    </eClassifiers>
-    */
 
     let ecoreEnumXML = `\n<eClassifiers xsi:type="ecore:EEnum" name="${ecoreEnum.name}">`
 
     ecoreEnum.enumEntry.forEach((entry:EcoreEnumEntry, i: number) => ecoreEnumXML += (
-        `\n<eLiterals name="${entry.name}" value="${entry.numberDefinition? entry.numberDefinition : i}" literal="${entry.stringDefinition}"/>`
+        `\n<eLiterals name="${entry.name}" value="${i}" literal="${entry.name.toLowerCase()}"/>`
     ))
 
     ecoreEnumXML += "\n</eClassifiers>"

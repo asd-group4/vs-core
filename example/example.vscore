@@ -3,8 +3,7 @@ nsUri "ntnu.vscode.model";
 
 
 enum Season{
-	Spring<"Spring">;
-	Autumn<"Autumn">;
+	Spring, Autumn, Summer
 }
 
 class University{
@@ -82,4 +81,16 @@ class Course{
 	String[15,20] bound_test3;
 
 	Containment<Department> department;
+}
+
+interface ASS{
+	String name; 
+}
+
+interface flaske{
+
+}
+
+class Joe extends Course implements ASS,flaske{
+	String xd; 
 }
