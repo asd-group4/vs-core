@@ -35,8 +35,8 @@ BoundDefinition:
     ARRAY_START (lowerBound=INT ',' upperBound=INT | upperBound=INT)? ARRAY_END;
 
 EcoreReference:
-    required?='required'? containmentType=('Container' | 'Containment') ClassCrossReference (boundDefinnition=BoundDefinition?)
-    name=ID ';';
+    required?='required'? containmentType=('Container' | 'Containment') references=ClassCrossReference (boundDefinnition=BoundDefinition?)
+    featureName=ID ';';
 
 EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MAY I ADD BTW 
     name=ID properties=ID ';';

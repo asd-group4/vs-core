@@ -48,6 +48,10 @@ export function translate_etype(type: string):string{
     }
 }
 
+function translate_eclass_ref(eClass: string):string{
+    return translate_etype(eClass)
+}
+
 export function generateEcoreReference(ecoreReference: EcoreReference):string{
     let upperBound = "";
     let lowerBound = "";
@@ -58,12 +62,11 @@ export function generateEcoreReference(ecoreReference: EcoreReference):string{
     }
 
     if(ecoreReference.required){
-        console.log(`required feature: ${ecoreReference.name}`)
         if(lowerBound == "") lowerBound = 'lowerBound="-1"';
     }
 
-    return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.name}" ${upperBound} ${lowerBound}
-        eType="${translate_etype(ecoreReference.name)}" containment="true" />`
+    return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.featureName}" ${upperBound} ${lowerBound}
+        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText)}" containment="true" />`
 }
 
 export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{

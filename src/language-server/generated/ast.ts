@@ -20,6 +20,7 @@ export function isBoundDefinition(item: unknown): item is BoundDefinition {
 }
 
 export interface ClassCrossReference extends AstNode {
+    readonly $container: EcoreReference;
     boundDefinition: BoundDefinition
     classReference: Reference<EcoreClass>
 }
@@ -127,7 +128,8 @@ export interface EcoreReference extends AstNode {
     readonly $container: EcoreClass;
     boundDefinnition: BoundDefinition
     containmentType: 'Container' | 'Containment'
-    name: string
+    featureName: string
+    references: ClassCrossReference
     required: boolean
 }
 

@@ -623,10 +623,15 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
-            "$type": "RuleCall",
-            "arguments": [],
-            "rule": {
-              "$refText": "ClassCrossReference"
+            "$type": "Assignment",
+            "feature": "references",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ClassCrossReference"
+              }
             }
           },
           {
@@ -645,7 +650,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "name",
+            "feature": "featureName",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
