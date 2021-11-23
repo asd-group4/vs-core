@@ -48,7 +48,7 @@ export function translate_etype(type: string):string{
         case "int":
             return "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
         default:
-            return `#//${type}/`
+            return `#//${type}`
     }
 }
 
@@ -88,7 +88,7 @@ export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
 }
 
 export function generateXML(ecoreModel : EcoreModel): string{
-    let text = '<?xml version="1.0" encoding="UTF-8"?';
+    let text = '<?xml version="1.0" encoding="UTF-8"?>';
 
     text += `\n<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="${ecoreModel.name.name}" nsURI="${ecoreModel.nsUri}" nsPrefix="${ecoreModel.name.name}">`
     
