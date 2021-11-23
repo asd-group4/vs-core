@@ -4,20 +4,20 @@ import { EcoreClass, EcoreFeature, EcoreModel, EcoreReference, EcoreEnum, EcoreE
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
 
-export function generateEcoreClass(ecoreClass: EcoreClass): string{
+export function generateEcoreClass(ecoreClass: EcoreClass, ecoreClasses : string[]): string{
     let ecoreClassXML = "";
 
     ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${!ecoreClass.interface? 'abstract="true" interface="true"':''}>`
 
-    ecoreClass.features.forEach(feature => ecoreClassXML += generateEcoreFeature(feature));
-    ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference));
+    ecoreClass.features.forEach(feature => ecoreClassXML += generateEcoreFeature(feature, ecoreClasses));
+    ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference, ecoreClasses));
 
     ecoreClassXML += "\n\t</eClassifiers>"
 
     return ecoreClassXML
 }
 
-export function generateEcoreFeature(ecoreFeature: EcoreFeature):string{
+export function generateEcoreFeature(ecoreFeature: EcoreFeature, ecoreClasses : string[]):string{
 
     let upperBound = "";
     let lowerBound = "";
@@ -37,26 +37,19 @@ export function generateEcoreFeature(ecoreFeature: EcoreFeature):string{
     if(ecoreFeature.transient) extraFeatures += ' transient="true"'
 
     return `\n\t\t<eStructuralFeatures xsi:type="ecore:EAttribute" name="${ecoreFeature.featureName}" ${upperBound} ${lowerBound} ${extraFeatures}
-        eType="${translate_etype(ecoreFeature.name)}"/>`
+        eType="${translate_etype(ecoreFeature.name, ecoreClasses)}"/>`
 }
 
-export function translate_etype(type: string):string{
-    let emp = type.toLocaleLowerCase()
-    switch (emp){
-        case "string":
-            return "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        case "int":
-            return "ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
-        default:
-            return `#//${type}`
-    }
+export function translate_etype(type: string, ecoreClasses : string[]):string{
+    if(ecoreClasses.includes(type)) return `#//${type}`
+    return `ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//E${type}`
 }
 
-function translate_eclass_ref(eClass: string):string{
-    return translate_etype(eClass)
+function translate_eclass_ref(eClass: string, ecoreClasses : string[]):string{
+    return translate_etype(eClass, ecoreClasses)
 }
 
-export function generateEcoreReference(ecoreReference: EcoreReference):string{
+export function generateEcoreReference(ecoreReference: EcoreReference, ecoreClasses : string[]):string{
     let upperBound = "";
     let lowerBound = "";
 
@@ -70,7 +63,7 @@ export function generateEcoreReference(ecoreReference: EcoreReference):string{
     }
 
     return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.featureName}" ${upperBound} ${lowerBound}
-        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText)}" containment="true" />`
+        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText, ecoreClasses)}" containment="true" />`
 }
 
 export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
@@ -94,7 +87,11 @@ export function generateXML(ecoreModel : EcoreModel): string{
     
     console.log("ecore-model name : ", ecoreModel.name.name)
 
-    ecoreModel.ecoreClasses.forEach(ecoreClass => text += generateEcoreClass(ecoreClass));
+    const ecoreClasses = ecoreModel.ecoreClasses.map(ecoreClass => ecoreClass.name)
+
+    // used to check if the datatype of a feature is an ecore datatype or model-defined class
+
+    ecoreModel.ecoreClasses.forEach(ecoreClass => text += generateEcoreClass(ecoreClass, ecoreClasses));
     ecoreModel.ecoreEnums.forEach(ecoreEnum => text+= generateEcoreEnum(ecoreEnum))
 
     text += '\n</ecore:EPackage>'
