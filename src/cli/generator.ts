@@ -29,7 +29,7 @@ export function generateEcoreFeature(ecoreFeature: EcoreFeature, ecoreClasses : 
     }
 
     if(ecoreFeature.required){
-        if(lowerBound == "") lowerBound = 'lowerBound="-1"';
+        if(lowerBound == "") lowerBound = 'lowerBound="1"';
     }
 
     if(ecoreFeature.final) extraFeatures += 'unsettable="true"'
@@ -42,7 +42,11 @@ export function generateEcoreFeature(ecoreFeature: EcoreFeature, ecoreClasses : 
 
 export function translate_etype(type: string, ecoreClasses : string[]):string{
     if(ecoreClasses.includes(type)) return `#//${type}`
-    return `ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//E${type}`
+    return `ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//E${ecoreFormat(type)}`
+}
+
+function ecoreFormat(type : string) : string{
+    return type.charAt(0).toUpperCase() + type.slice(1)
 }
 
 function translate_eclass_ref(eClass: string, ecoreClasses : string[]):string{
@@ -83,11 +87,15 @@ export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
 export function generateXML(ecoreModel : EcoreModel): string{
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
 
-    text += `\n<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="${ecoreModel.name.name}" nsURI="${ecoreModel.nsUri}" nsPrefix="${ecoreModel.name.name}">`
+    text += `\n<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="${ecoreModel.name.name}" nsURI="${ecoreModel.nsUri.name}" nsPrefix="${ecoreModel.name.name}">`
     
     console.log("ecore-model name : ", ecoreModel.name.name)
 
-    const ecoreClasses = ecoreModel.ecoreClasses.map(ecoreClass => ecoreClass.name)
+    let ecoreClassesName = ecoreModel.ecoreClasses.map(ecoreClass => ecoreClass.name)
+    let ecoreEnums = ecoreModel.ecoreEnums.map(ecoreClass => ecoreClass.name)
+
+    const ecoreClasses = ecoreClassesName.concat(ecoreEnums)
+
 
     // used to check if the datatype of a feature is an ecore datatype or model-defined class
 
