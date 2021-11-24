@@ -66,8 +66,14 @@ export function generateEcoreReference(ecoreReference: EcoreReference, ecoreClas
         if(lowerBound == "") lowerBound = 'lowerBound="1"';
     }
 
+    let containment = "";
+
+    if(!ecoreReference.refers){
+        containment = `containment="${ecoreReference.containmentType==="Containment"}"`
+    }
+
     return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.featureName}" ${upperBound} ${lowerBound}
-        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText, ecoreClasses)}" containment="true" />`
+        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText, ecoreClasses)}" ${containment} />`
 }
 
 export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{

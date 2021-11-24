@@ -8,7 +8,7 @@
 import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
 export interface BoundDefinition extends AstNode {
-    readonly $container: EcoreFeature | EcoreReference | ClassCrossReference;
+    readonly $container: EcoreFeature | EcoreReference | ClassCrossReference | ClassReference;
     lowerBound: number
     upperBound: number
 }
@@ -29,6 +29,18 @@ export const ClassCrossReference = 'ClassCrossReference';
 
 export function isClassCrossReference(item: unknown): item is ClassCrossReference {
     return reflection.isInstance(item, ClassCrossReference);
+}
+
+export interface ClassReference extends AstNode {
+    readonly $container: EcoreReference;
+    BoundDefinition: BoundDefinition
+    classReference: Reference<EcoreClass>
+}
+
+export const ClassReference = 'ClassReference';
+
+export function isClassReference(item: unknown): item is ClassReference {
+    return reflection.isInstance(item, ClassReference);
 }
 
 export interface EcoreClass extends AstNode {
@@ -133,7 +145,8 @@ export interface EcoreReference extends AstNode {
     containmentType: 'Container' | 'Containment'
     featureName: string
     final: boolean
-    references: ClassCrossReference
+    references: ClassCrossReference | ClassReference
+    refers: boolean
     required: boolean
 }
 
@@ -165,14 +178,14 @@ export function isNsUriDeclaration(item: unknown): item is NsUriDeclaration {
     return reflection.isInstance(item, NsUriDeclaration);
 }
 
-export type VsCoreAstType = 'BoundDefinition' | 'ClassCrossReference' | 'EcoreClass' | 'EcoreDefinition' | 'EcoreEnum' | 'EcoreEnumEntry' | 'EcoreFeature' | 'EcoreModel' | 'EcoreModelDefinition' | 'EcoreReference' | 'InstanceTypeName' | 'NsUriDeclaration';
+export type VsCoreAstType = 'BoundDefinition' | 'ClassCrossReference' | 'ClassReference' | 'EcoreClass' | 'EcoreDefinition' | 'EcoreEnum' | 'EcoreEnumEntry' | 'EcoreFeature' | 'EcoreModel' | 'EcoreModelDefinition' | 'EcoreReference' | 'InstanceTypeName' | 'NsUriDeclaration';
 
-export type VsCoreAstReference = 'ClassCrossReference:classReference' | 'EcoreClass:interfaces' | 'EcoreClass:parentClass';
+export type VsCoreAstReference = 'ClassCrossReference:classReference' | 'ClassReference:classReference' | 'EcoreClass:interfaces' | 'EcoreClass:parentClass';
 
 export class VsCoreAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['BoundDefinition', 'ClassCrossReference', 'EcoreClass', 'EcoreDefinition', 'EcoreEnum', 'EcoreEnumEntry', 'EcoreFeature', 'EcoreModel', 'EcoreModelDefinition', 'EcoreReference', 'InstanceTypeName', 'NsUriDeclaration'];
+        return ['BoundDefinition', 'ClassCrossReference', 'ClassReference', 'EcoreClass', 'EcoreDefinition', 'EcoreEnum', 'EcoreEnumEntry', 'EcoreFeature', 'EcoreModel', 'EcoreModelDefinition', 'EcoreReference', 'InstanceTypeName', 'NsUriDeclaration'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -193,6 +206,9 @@ export class VsCoreAstReflection implements AstReflection {
     getReferenceType(referenceId: VsCoreAstReference): string {
         switch (referenceId) {
             case 'ClassCrossReference:classReference': {
+                return EcoreClass;
+            }
+            case 'ClassReference:classReference': {
                 return EcoreClass;
             }
             case 'EcoreClass:interfaces': {

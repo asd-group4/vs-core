@@ -44,8 +44,8 @@ InstanceTypeName:
     'instanceTypeName' name=STRING;
 
 EcoreReference:
-    required?='required'? final?='final'? containmentType=('Container' | 'Containment') 
-    references=ClassCrossReference (boundDefinition=BoundDefinition?)
+    required?='required'? final?='final'? (containmentType=('Container' | 'Containment') 
+    references=ClassCrossReference | refers?='refers' references=ClassReference) (boundDefinition=BoundDefinition?)
     featureName=ID ';';
 
 EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MAY I ADD BTW 
@@ -53,6 +53,9 @@ EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MA
 
 ClassCrossReference:
     '<' classReference=[EcoreClass] boundDefinition=BoundDefinition? '>';
+
+ClassReference:
+    classReference=[EcoreClass] BoundDefinition=BoundDefinition?;
 
 
 //terminal WORD_PERIOD_CONNECTED : /([^\s]+)/;

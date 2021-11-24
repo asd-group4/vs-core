@@ -681,35 +681,73 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "cardinality": "?"
           },
           {
-            "$type": "Assignment",
-            "feature": "containmentType",
-            "operator": "=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "Keyword",
-                  "value": "Container",
-                  "elements": []
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "Containment"
-                }
-              ]
-            }
-          },
-          {
-            "$type": "Assignment",
-            "feature": "references",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "ClassCrossReference"
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "containmentType",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "Alternatives",
+                      "elements": [
+                        {
+                          "$type": "Keyword",
+                          "value": "Container",
+                          "elements": []
+                        },
+                        {
+                          "$type": "Keyword",
+                          "value": "Containment"
+                        }
+                      ]
+                    },
+                    "elements": []
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "references",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "ClassCrossReference"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "refers",
+                    "operator": "?=",
+                    "terminal": {
+                      "$type": "Keyword",
+                      "value": "refers"
+                    },
+                    "elements": []
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "references",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "ClassReference"
+                      }
+                    }
+                  }
+                ]
               }
-            }
+            ]
           },
           {
             "$type": "Assignment",
@@ -824,6 +862,42 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Keyword",
             "value": ">"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ClassReference",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "classReference",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "EcoreClass"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "BoundDefinition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "BoundDefinition"
+              }
+            },
+            "cardinality": "?"
           }
         ]
       }
