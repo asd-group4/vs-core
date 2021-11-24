@@ -35,7 +35,7 @@ class StudyProgram{
 class YearlyStudyProgram{
 	Container<StudyProgram> studyProgram;
 	Containment<SpecializationGroup[]> specializationGroups;
-	required Semester startSemester;	
+	required refers Semester startSemester;	
 	Containment<CourseContainer> courses;
 }
 
