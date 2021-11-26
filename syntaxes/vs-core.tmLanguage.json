@@ -10,11 +10,11 @@
     },
     {
       "name": "keyword.control.vs-core",
-      "match": "\\b(Hello|person)\\b"
+      "match": "\\b(class|Container|Containment|enum|extends|final|implements|instanceTypeName|interface|Model|nsUri|refers|required|transient|volatile)\\b"
     },
     {
       "name": "keyword.symbol.vs-core",
-      "match": "(\\!)"
+      "match": "(\\,|\\;|\\<|\\>)"
     }
   ],
   "repository": {

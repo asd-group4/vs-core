@@ -1,15 +1,16 @@
 import colors from 'colors';
 import { Command } from 'commander';
 import { languageMetaData } from '../language-server/generated/module';
-import { Model } from '../language-server/generated/ast';
+import { EcoreModel } from '../language-server/generated/ast';
 import { createVsCoreServices } from '../language-server/vs-core-module';
 import { extractAstNode } from './cli-util';
-import { generateJavaScript } from './generator';
+//:wimport { generateEcoreClass, generateEcoreFeature, generateEcoreInterface, generateEcoreRefference } from './generator';
+import { generateEcore } from './generator';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
-    const model = await extractAstNode<Model>(fileName, languageMetaData.fileExtensions, createVsCoreServices());
-    const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
-    console.log(colors.green(`JavaScript code generated successfully: ${generatedFilePath}`));
+    const model = await extractAstNode<EcoreModel>(fileName, languageMetaData.fileExtensions, createVsCoreServices());
+    const generatedFilePath = generateEcore(model, fileName, opts.destination);
+    console.log(colors.green(`Ecore model generated successfully: ${generatedFilePath}`));
 };
 
 export type GenerateOptions = {
@@ -27,7 +28,7 @@ export default function(): void {
         .command('generate')
         .argument('<file>', `possible file extensions: ${languageMetaData.fileExtensions.join(', ')}`)
         .option('-d, --destination <dir>', 'destination directory of generating')
-        .description('generates JavaScript code that prints "Hello, {name}!" for each greeting in a source file')
+        .description('DSL-transformation for generating Ecore files based on a simplified java-like syntax')
         .action(generateAction);
 
     program.parse(process.argv);

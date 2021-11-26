@@ -1,5 +1,5 @@
-import { ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
-import { VsCoreAstType, Person } from './generated/ast';
+import { Reference, ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
+import { EcoreClass, VsCoreAstType } from './generated/ast';
 import { VsCoreServices } from './vs-core-module';
 
 /**
@@ -15,7 +15,8 @@ export class VsCoreValidationRegistry extends ValidationRegistry {
         super(services);
         const validator = services.validation.VsCoreValidator;
         const checks: VsCoreChecks = {
-            Person: validator.checkPersonStartsWithCapital
+            EcoreClass: [validator.checkImplementsAreInterfaces, 
+                validator.checkInterfaceExtend]
         };
         this.register(checks, validator);
     }
@@ -26,13 +27,25 @@ export class VsCoreValidationRegistry extends ValidationRegistry {
  */
 export class VsCoreValidator {
 
-    checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
-        if (person.name) {
-            const firstChar = person.name.substring(0, 1);
-            if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
+    checkInterfaceExtend(ecoreClass: EcoreClass, accept:ValidationAcceptor): void{
+        if(ecoreClass.parentClass != null){ 
+            if(ecoreClass.parentClass.ref?.interface){
+                    accept("error", "A class cannot extend an interface", {node:ecoreClass})
+                }
             }
-        }
     }
 
+    checkImplementsAreInterfaces(ecoreClass: EcoreClass, accept:ValidationAcceptor): void{
+        // validate that all the classes in ecoreClass.implements are interfaces and not classes
+        
+        if(ecoreClass.interfaces.length > 0){
+            ecoreClass.interfaces.forEach((element : Reference<EcoreClass>) => {
+               if(element.ref?.class) accept("error", "A class cannot implement a class", {node:ecoreClass})
+            });
+            /*ecoreClass.interfaces.forEach((implements:EcoreClass) => {
+                if(implements.class) accept("error", "A class cannot implement a class", {node:ecoreClass})
+            });*/
+        }
+    }
+    
 }
