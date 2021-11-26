@@ -4,6 +4,9 @@ import { EcoreClass, EcoreFeature, EcoreModel, EcoreReference, EcoreEnum, EcoreE
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
 
+
+let MODEL : EcoreModel | null = null;
+
 export function generateEcoreClass(ecoreClass: EcoreClass, ecoreClasses : string[]): string{
     let ecoreClassXML = "";
 
@@ -11,7 +14,7 @@ export function generateEcoreClass(ecoreClass: EcoreClass, ecoreClasses : string
     ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${ecoreClass.name}" ${ecoreClass.interface? 'abstract="true" interface="true"':''}>`
 
     ecoreClass.features.forEach(feature => ecoreClassXML += generateEcoreFeature(feature, ecoreClasses));
-    ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference, ecoreClasses));
+    ecoreClass.references.forEach(reference => ecoreClassXML += generateEcoreReference(reference, ecoreClasses, ecoreClass));
 
     ecoreClassXML += "\n\t</eClassifiers>"
 
@@ -54,7 +57,7 @@ function translate_eclass_ref(eClass: string, ecoreClasses : string[]):string{
     return translate_etype(eClass, ecoreClasses)
 }
 
-export function generateEcoreReference(ecoreReference: EcoreReference, ecoreClasses : string[]):string{
+export function generateEcoreReference(ecoreReference: EcoreReference, ecoreClasses : string[], ecoreParent : EcoreClass):string{
     let upperBound = "";
     let lowerBound = "";
 
@@ -69,12 +72,18 @@ export function generateEcoreReference(ecoreReference: EcoreReference, ecoreClas
 
     let containment = "";
 
+    let opposite = ""; 
+
     if(!ecoreReference.refers){
         containment = `containment="${ecoreReference.containmentType==="Containment"}"`
     }
 
+    if(ecoreReference.opposite != undefined){
+        opposite = findOpposite(ecoreReference, ecoreParent)
+    }
+
     return `\n<eStructuralFeatures xsi:type="ecore:EReference" name="${ecoreReference.featureName}" ${upperBound} ${lowerBound}
-        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText, ecoreClasses)}" ${containment} />`
+        eType="${translate_eclass_ref(ecoreReference.references.classReference.$refText, ecoreClasses)}" ${containment} ${opposite} />`
 }
 
 export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
@@ -94,6 +103,8 @@ export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
 export function generateXML(ecoreModel : EcoreModel): string{
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
 
+    MODEL = ecoreModel;
+
     text += `\n<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="${ecoreModel.name.name}" nsURI="${ecoreModel.nsUri.name}" nsPrefix="${ecoreModel.name.name}">`
     
     console.log("ecore-model name : ", ecoreModel.name.name)
@@ -112,6 +123,48 @@ export function generateXML(ecoreModel : EcoreModel): string{
     text += '\n</ecore:EPackage>'
 
     return text
+}
+
+function findOpposite(ecoreReference : EcoreReference, ecoreParent : EcoreClass):string{
+    //    eOpposite="#//Universitet/studenter" 
+
+    if(ecoreReference.opposite.oppositeClass == undefined){
+        let refClass = getEcoreClassDefinition(ecoreReference.references.classReference.$refText)
+        return `eOpposite="#//${refClass?.name}/${getEcoreClassDefinitionRefName(
+            refClass, ecoreParent.name
+        )}"`
+    } else {
+        return `eOpposite="#//${ecoreReference.opposite.oppositeClass.$refText}/${getEcoreClassDefinitionRefName(
+            ecoreReference.opposite.oppositeClass.ref, ecoreParent.name
+        )}"`
+    }   
+}
+
+function getEcoreClassDefinition(ecoreClassName : string){
+    return MODEL?.ecoreClasses.find(ecoreClass => ecoreClass.name == ecoreClassName)
+}
+
+/**
+ * Funcion to get the name of a reference within a given class with a given type
+ */
+
+function getEcoreClassDefinitionRefName(ecoreClass: EcoreClass | undefined, ecoreFeatureType: string):string{
+    if(ecoreClass == undefined) throw 'Invalid Ecore Opposite Reference: Ecore class undefined'
+    let featureName
+    
+    console.log("Trying to find feature", ecoreFeatureType);
+    console.log("Looking at class", ecoreClass.name);   
+
+    featureName = ecoreClass.features.find(ecoreFeature => ecoreFeature.name == ecoreFeatureType)?.featureName
+    if(featureName != undefined) return featureName
+
+
+    featureName = ecoreClass.references.find(ecoreReference => ecoreReference.references.classReference.$refText == ecoreFeatureType)?.featureName
+    if(featureName != undefined) return featureName
+    
+    if(featureName == undefined) throw 'Invalid Ecore Opposite Reference: Ecore class featureName undefined'
+
+    return ""
 }
 
 export function generateEcore(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
