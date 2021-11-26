@@ -6,7 +6,17 @@ class Universitet{
     String navn;
 }
 
+class Nasjon{
+    Containment<Student[]> innbyggere;
+}
+
 class Student{
-    Container<Universitet> universitet;
+    Container<Universitet> universitet opposite Universitet; 
     String navn;
+    refers Postnr postnr;
+}
+
+class Postnr{
+    int postnr; 
+    String sted;
 }
