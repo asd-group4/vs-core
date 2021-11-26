@@ -82,15 +82,3 @@ class Course{
 
 	Containment<Department> department;
 }
-
-interface ASS{
-	String name; 
-}
-
-interface flaske{
-
-}
-
-class Joe extends Course implements ASS,flaske{
-	String xd; 
-}
