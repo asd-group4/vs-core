@@ -46,7 +46,7 @@ InstanceTypeName:
 EcoreReference:
     required?='required'? final?='final'? (containmentType=('Container' | 'Containment') 
     references=ClassCrossReference | refers?='refers' references=ClassReference) (boundDefinition=BoundDefinition?)
-    featureName=ID ';';
+    featureName=ID (opposite=Opposite?) ';';
 
 EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MAY I ADD BTW 
     name=ID properties=ID ';';
@@ -57,6 +57,8 @@ ClassCrossReference:
 ClassReference:
     classReference=[EcoreClass] BoundDefinition=BoundDefinition?;
 
+Opposite: 
+    'opposite' oppositeClass=[EcoreClass]?; 
 
 //terminal WORD_PERIOD_CONNECTED : /([^\s]+)/;
 
