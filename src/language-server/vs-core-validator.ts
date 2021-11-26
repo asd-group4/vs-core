@@ -1,5 +1,5 @@
 import { Reference, ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
-import { EcoreClass, VsCoreAstType } from './generated/ast';
+import { EcoreClass, EcoreModel, EcoreReference, VsCoreAstType } from './generated/ast';
 import { VsCoreServices } from './vs-core-module';
 
 /**
@@ -16,7 +16,8 @@ export class VsCoreValidationRegistry extends ValidationRegistry {
         const validator = services.validation.VsCoreValidator;
         const checks: VsCoreChecks = {
             EcoreClass: [validator.checkImplementsAreInterfaces, 
-                validator.checkInterfaceExtend]
+                validator.checkInterfaceExtend],
+            EcoreModel : [ validator.validateContainment ,validator.validateOpposite]
         };
         this.register(checks, validator);
     }
@@ -46,6 +47,55 @@ export class VsCoreValidator {
                 if(implements.class) accept("error", "A class cannot implement a class", {node:ecoreClass})
             });*/
         }
+    }
+
+    validateContainment(ecoreModel: EcoreModel, accept: ValidationAcceptor):void {
+
+        // validate that a container-class has a corresponding containment
+        // also validate that a class doesnt have more than one container
+
+        ecoreModel.ecoreClasses.forEach((ecoreClass : EcoreClass) => {
+            let containerClasses = ecoreClass.references.filter((ecoreReference : EcoreReference) => ecoreReference.containmentType == "Container")
+
+            if(containerClasses.length > 1) 
+                accept("error", "A class can only have one container-class", {node : containerClasses[containerClasses.length-1]})
+        })
+
+    }
+
+    validateOpposite(ecoreModel : EcoreModel, accept:ValidationAcceptor): void{
+
+        // this is a complete mess and should be reformatted
+        // purpose is to make sure that a variable cant opposite to a class which 
+        // doesnt containt itself
+
+        let classMap  = new Map()
+        let opposites : {classOrigin : EcoreClass, reference : EcoreReference}[] = []
+
+        ecoreModel.ecoreClasses.forEach((ecoreClass : EcoreClass) => {
+            classMap.set(ecoreClass.name, ecoreClass)
+
+            ecoreClass.references.forEach((ecoreReference : EcoreReference) => {
+                if(ecoreReference.opposite != undefined){
+                    opposites.push({
+                        classOrigin : ecoreClass,
+                        reference : ecoreReference
+                    })
+                }
+            })
+            
+        })
+
+        if(opposites.length > 0){
+            opposites.forEach((opposite) => {
+                let valid = false
+                classMap.get(opposite.classOrigin.name).references.forEach((reference: EcoreReference) => {
+                    if(reference.references.classReference.$refText == opposite.reference.references.classReference.$refText) valid = !valid
+                })
+                if(!valid) accept("error", "The opposite reference is either ambiguous or refers to an element which doesn't exist", {node : opposite.reference})
+            })
+        }
+
     }
     
 }
