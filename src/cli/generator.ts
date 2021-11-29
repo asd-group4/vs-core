@@ -125,6 +125,25 @@ export function generateXML(ecoreModel : EcoreModel): string{
     return text
 }
 
+function generateGenmodelXML(model : EcoreModel): string {
+    let text = '<?xml version="1.0" encoding="UTF-8"?>';
+    let fileName = "example.ecore";
+
+    //TODO: Figure out how to deal with all of the metadata
+    text += 
+    `\n<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelName="${model.name.name}"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="5.0" copyrightFields="false" operationReflection="true" importOrganizing="true">`;
+
+    text += `\n<foreignModel>${fileName}</foreignModel>`; //TODO: Also needs to be handled, pass in filename I guess
+    text += `\n<genPackages prefix="Examplemodel" disposableProviderFactory="true" ecorePackage="${fileName}#/">`;
+
+    text += "\n</genPackages>\n</genmodel:GenModel>";
+
+    return text;
+}
+
 function findOpposite(ecoreReference : EcoreReference, ecoreParent : EcoreClass):string{
     //    eOpposite="#//Universitet/studenter" 
 
@@ -192,7 +211,7 @@ export function generateEcore(ecoreModel: EcoreModel, filePath: string, destinat
 
 export function generateGenmodel(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
     const fileNode = new CompositeGeneratorNode();
-    fileNode.append("Test", NL);
+    fileNode.append(generateGenmodelXML(ecoreModel), NL);
 
     return generateModelFile(filePath, destination, ".genmodel", fileNode);
 }
