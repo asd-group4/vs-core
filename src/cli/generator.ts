@@ -100,6 +100,15 @@ export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
     
 }
 
+function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
+    let xml = `\n<genEnums typeSafeEnumCompatible="false" ecoreEnum="${fileName}#//${ecoreEnum.name}">`;
+    ecoreEnum.enumEntry.forEach(entry => xml += 
+        `\n<genEnumLiterals ecoreEnumLiteral="${fileName}#//${ecoreEnum.name}/${entry.name}"/>`);
+    xml += `\n</genEnums>`;
+
+    return xml;
+}
+
 export function generateXML(ecoreModel : EcoreModel): string{
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
 
@@ -138,6 +147,8 @@ function generateGenmodelXML(model : EcoreModel): string {
 
     text += `\n<foreignModel>${fileName}</foreignModel>`; //TODO: Also needs to be handled, pass in filename I guess
     text += `\n<genPackages prefix="Examplemodel" disposableProviderFactory="true" ecorePackage="${fileName}#/">`;
+
+    model.ecoreEnums.forEach(ecoreEnum => text += generateGenmodelEnum(ecoreEnum, fileName));
 
     text += "\n</genPackages>\n</genmodel:GenModel>";
 
