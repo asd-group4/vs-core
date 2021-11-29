@@ -167,13 +167,10 @@ function getEcoreClassDefinitionRefName(ecoreClass: EcoreClass | undefined, ecor
     return ""
 }
 
-export function generateEcore(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
+function generateModelFile(filePath: string, destination: string | undefined, fileExtension: string, fileNode : CompositeGeneratorNode): string {
     const data = extractDestinationAndName(filePath, destination);
-    let generatedFilePath = `${path.join(data.destination, data.name)}.ecore`;
-
-    const fileNode = new CompositeGeneratorNode();
-    fileNode.append(generateXML(ecoreModel), NL)
-
+    let generatedFilePath = `${path.join(data.destination, data.name)}`.concat(fileExtension);
+    
     if (destination == undefined){
         data.destination = data.destination.replace("/vscore/", "/vs-core/")
         generatedFilePath = generatedFilePath.replace("/vscore/", "/vs-core/")
@@ -186,23 +183,16 @@ export function generateEcore(ecoreModel: EcoreModel, filePath: string, destinat
     return generatedFilePath;
 }
 
-//TODO: Refactor common code
-export function generateGenmodel(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
-    const data = extractDestinationAndName(filePath, destination);
-    let generatedFilePath = `${path.join(data.destination, data.name)}.genmodel`;
+export function generateEcore(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
+    const fileNode = new CompositeGeneratorNode();
+    fileNode.append(generateXML(ecoreModel), NL)
 
+    return generateModelFile(filePath, destination, ".ecore", fileNode);
+}
+
+export function generateGenmodel(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
     const fileNode = new CompositeGeneratorNode();
     fileNode.append("Test", NL);
 
-    if (destination == undefined){
-        data.destination = data.destination.replace("/vscore/", "/vs-core/")
-        generatedFilePath = generatedFilePath.replace("/vscore/", "/vs-core/")
-    }     
-
-    if (!fs.existsSync(data.destination)) {
-        fs.mkdirSync(data.destination, { recursive: true });
-    }
-
-    fs.writeFileSync(generatedFilePath, processGeneratorNode(fileNode));
-    return generatedFilePath;
+    return generateModelFile(filePath, destination, ".genmodel", fileNode);
 }
