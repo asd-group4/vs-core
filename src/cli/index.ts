@@ -5,12 +5,14 @@ import { EcoreModel } from '../language-server/generated/ast';
 import { createVsCoreServices } from '../language-server/vs-core-module';
 import { extractAstNode } from './cli-util';
 //:wimport { generateEcoreClass, generateEcoreFeature, generateEcoreInterface, generateEcoreRefference } from './generator';
-import { generateEcore } from './generator';
+import { generateEcore, generateGenmodel } from './generator';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const model = await extractAstNode<EcoreModel>(fileName, languageMetaData.fileExtensions, createVsCoreServices());
-    const generatedFilePath = generateEcore(model, fileName, opts.destination);
-    console.log(colors.green(`Ecore model generated successfully: ${generatedFilePath}`));
+    const generatedEcoreFilePath = generateEcore(model, fileName, opts.destination);
+    const generatedGenmodelFilePath = generateGenmodel(model, fileName, opts.destination);
+    console.log(colors.green(`Ecore model generated successfully: ${generatedEcoreFilePath}`));
+    console.log(colors.green(`Genmodel model generated successfully: ${generatedGenmodelFilePath}`));
 };
 
 export type GenerateOptions = {
