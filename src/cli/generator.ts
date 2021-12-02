@@ -134,8 +134,6 @@ function generateGenmodelReference(reference: EcoreReference, className: string,
         propertySortChoices = `propertySortChoices="true" `;
     }
 
-    console.log(reference.featureName + ", " + reference.containmentType);
-
     xml += `${notify}${property}${children}${createChild}${propertySortChoices}`;
     xml += `ecoreFeature="ecore:EReference ${fileName}#//${className}/${reference.featureName}" />`;
 
@@ -143,7 +141,8 @@ function generateGenmodelReference(reference: EcoreReference, className: string,
 }
 
 function generateGenmodelClass(ecoreClass: EcoreClass, fileName: string): string {
-    let xml = `\n<genClasses ecoreClass="${fileName}#//${ecoreClass.name}">`;
+    let image = ecoreClass.interface? `image="false" `:``;
+    let xml = `\n<genClasses ${image}ecoreClass="${fileName}#//${ecoreClass.name}">`;
     ecoreClass.features.forEach(feature => xml += generateGenmodelAttribute(feature, ecoreClass.name, fileName));
     ecoreClass.references.forEach(feature => xml += generateGenmodelReference(feature, ecoreClass.name, fileName));
     xml += `\n</genClasses>`;
