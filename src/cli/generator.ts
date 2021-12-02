@@ -109,6 +109,25 @@ function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
     return xml;
 }
 
+function generateGenmodelAttribute(feature: EcoreFeature, className: string,  fileName: string): string {
+    let xml = ``;
+    return xml;
+}
+
+function generateGenmodelReference(feature: EcoreReference, className: string, fileName: string): string {
+    let xml = ``;
+    return xml;
+}
+
+function generateGenmodelClass(ecoreClass: EcoreClass, fileName: string): string {
+    let xml = `\n<genClasses ecoreClass="${fileName}#//${ecoreClass.name}">`;
+    ecoreClass.features.forEach(feature => xml += generateGenmodelAttribute(feature, ecoreClass.name, fileName));
+    ecoreClass.references.forEach(feature => xml += generateGenmodelReference(feature, ecoreClass.name, fileName));
+    xml += `\n</genClasses>`;
+
+    return xml;
+}
+
 export function generateXML(ecoreModel : EcoreModel): string{
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
 
@@ -136,7 +155,7 @@ export function generateXML(ecoreModel : EcoreModel): string{
 
 function generateGenmodelXML(model : EcoreModel): string {
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
-    let fileName = "example.ecore";
+    let fileName = "example.ecore"; //TODO
 
     //TODO: Figure out how to deal with all of the metadata
     text += 
@@ -145,10 +164,11 @@ function generateGenmodelXML(model : EcoreModel): string {
     rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="5.0" copyrightFields="false" operationReflection="true" importOrganizing="true">`;
 
-    text += `\n<foreignModel>${fileName}</foreignModel>`; //TODO: Also needs to be handled, pass in filename I guess
+    text += `\n<foreignModel>${fileName}</foreignModel>`;
     text += `\n<genPackages prefix="Examplemodel" disposableProviderFactory="true" ecorePackage="${fileName}#/">`;
 
     model.ecoreEnums.forEach(ecoreEnum => text += generateGenmodelEnum(ecoreEnum, fileName));
+    model.ecoreClasses.forEach(ecoreClass => text += generateGenmodelClass(ecoreClass, fileName));
 
     text += "\n</genPackages>\n</genmodel:GenModel>";
 
