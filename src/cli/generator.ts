@@ -110,7 +110,9 @@ function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
 }
 
 function generateGenmodelAttribute(feature: EcoreFeature, className: string,  fileName: string): string {
-    let xml = ``;
+    // I can't find any exampels where a Attribute has createChild="true", but that might not always be the case
+    let xml =
+    `\n<genFeatures createChild="false" ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}"/>`;
     return xml;
 }
 
