@@ -112,12 +112,33 @@ function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
 function generateGenmodelAttribute(feature: EcoreFeature, className: string,  fileName: string): string {
     // I can't find any exampels where a Attribute has createChild="true", but that might not always be the case
     let xml =
-    `\n<genFeatures createChild="false" ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}"/>`;
+    `\n<genFeatures createChild="false" ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}" />`;
     return xml;
 }
 
-function generateGenmodelReference(feature: EcoreReference, className: string, fileName: string): string {
-    let xml = ``;
+function generateGenmodelReference(reference: EcoreReference, className: string, fileName: string): string {
+    let xml = `\n<genFeatures `;
+
+    let notify = ``;
+    let property = ``;
+    let children = ``;
+    let createChild = `createChild="false" `;
+    let propertySortChoices = ``;
+    
+    if(!reference.refers && reference.containmentType === "Containment") {
+        property = `property="None" `;
+        children = `children="true" `;
+        createChild = `createChild="true" `;
+    } else {
+        notify = `notify="false" `;
+        propertySortChoices = `propertySortChoices="true" `;
+    }
+
+    console.log(reference.featureName + ", " + reference.containmentType);
+
+    xml += `${notify}${property}${children}${createChild}${propertySortChoices}`;
+    xml += `ecoreFeature="ecore:EReference ${fileName}#//${className}/${reference.featureName}" />`;
+
     return xml;
 }
 
