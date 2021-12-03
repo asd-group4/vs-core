@@ -100,6 +100,55 @@ export function generateEcoreEnum(ecoreEnum: EcoreEnum):string{
     
 }
 
+function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
+    let xml = `\n<genEnums typeSafeEnumCompatible="false" ecoreEnum="${fileName}#//${ecoreEnum.name}">`;
+    ecoreEnum.enumEntry.forEach(entry => xml += 
+        `\n<genEnumLiterals ecoreEnumLiteral="${fileName}#//${ecoreEnum.name}/${entry.name}"/>`);
+    xml += `\n</genEnums>`;
+
+    return xml;
+}
+
+function generateGenmodelAttribute(feature: EcoreFeature, className: string,  fileName: string): string {
+    let xml =
+    `\n<genFeatures createChild="false" ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}" />`;
+    return xml;
+}
+
+function generateGenmodelReference(reference: EcoreReference, className: string, fileName: string): string {
+    let xml = `\n<genFeatures `;
+
+    let notify = ``;
+    let property = ``;
+    let children = ``;
+    let createChild = `createChild="false" `;
+    let propertySortChoices = ``;
+    
+    if(!reference.refers && reference.containmentType === "Containment") {
+        property = `property="None" `;
+        children = `children="true" `;
+        createChild = `createChild="true" `;
+    } else {
+        notify = `notify="false" `;
+        propertySortChoices = `propertySortChoices="true" `;
+    }
+
+    xml += `${notify}${property}${children}${createChild}${propertySortChoices}`;
+    xml += `ecoreFeature="ecore:EReference ${fileName}#//${className}/${reference.featureName}" />`;
+
+    return xml;
+}
+
+function generateGenmodelClass(ecoreClass: EcoreClass, fileName: string): string {
+    let image = ecoreClass.interface? `image="false" `:``;
+    let xml = `\n<genClasses ${image}ecoreClass="${fileName}#//${ecoreClass.name}">`;
+    ecoreClass.features.forEach(feature => xml += generateGenmodelAttribute(feature, ecoreClass.name, fileName));
+    ecoreClass.references.forEach(feature => xml += generateGenmodelReference(feature, ecoreClass.name, fileName));
+    xml += `\n</genClasses>`;
+
+    return xml;
+}
+
 export function generateXML(ecoreModel : EcoreModel): string{
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
 
@@ -123,6 +172,27 @@ export function generateXML(ecoreModel : EcoreModel): string{
     text += '\n</ecore:EPackage>'
 
     return text
+}
+
+function generateGenmodelXML(model : EcoreModel, destination: string, name: string): string {
+    let text = '<?xml version="1.0" encoding="UTF-8"?>';
+    let ecoreModelFileName = `${name}.ecore`;
+
+    text += 
+    `\n<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/${destination}" modelPluginID="${name}" modelName="${model.name.name}"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="5.0" copyrightFields="false" operationReflection="true" importOrganizing="true">`;
+
+    text += `\n<foreignModel>${ecoreModelFileName}</foreignModel>`;
+    text += `\n<genPackages prefix="Examplemodel" disposableProviderFactory="true" ecorePackage="${ecoreModelFileName}#/">`;
+
+    model.ecoreEnums.forEach(ecoreEnum => text += generateGenmodelEnum(ecoreEnum, ecoreModelFileName));
+    model.ecoreClasses.forEach(ecoreClass => text += generateGenmodelClass(ecoreClass, ecoreModelFileName));
+
+    text += "\n</genPackages>\n</genmodel:GenModel>";
+
+    return text;
 }
 
 function findOpposite(ecoreReference : EcoreReference, ecoreParent : EcoreClass):string{
@@ -167,13 +237,10 @@ function getEcoreClassDefinitionRefName(ecoreClass: EcoreClass | undefined, ecor
     return ""
 }
 
-export function generateEcore(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
+function generateModelFile(filePath: string, destination: string | undefined, fileExtension: string, fileNode : CompositeGeneratorNode): string {
     const data = extractDestinationAndName(filePath, destination);
-    let generatedFilePath = `${path.join(data.destination, data.name)}.ecore`;
-
-    const fileNode = new CompositeGeneratorNode();
-    fileNode.append(generateXML(ecoreModel), NL)
-
+    let generatedFilePath = `${path.join(data.destination, data.name)}`.concat(fileExtension);
+    
     if (destination == undefined){
         data.destination = data.destination.replace("/vscore/", "/vs-core/")
         generatedFilePath = generatedFilePath.replace("/vscore/", "/vs-core/")
@@ -184,4 +251,20 @@ export function generateEcore(ecoreModel: EcoreModel, filePath: string, destinat
     }
     fs.writeFileSync(generatedFilePath, processGeneratorNode(fileNode));
     return generatedFilePath;
+}
+
+export function generateEcore(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
+    const fileNode = new CompositeGeneratorNode();
+    fileNode.append(generateXML(ecoreModel), NL)
+
+    return generateModelFile(filePath, destination, ".ecore", fileNode);
+}
+
+export function generateGenmodel(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
+    const data = extractDestinationAndName(filePath, destination);
+    
+    const fileNode = new CompositeGeneratorNode();
+    fileNode.append(generateGenmodelXML(ecoreModel, data.destination, data.name), NL);
+
+    return generateModelFile(filePath, destination, ".genmodel", fileNode);
 }
