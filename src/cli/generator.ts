@@ -110,7 +110,6 @@ function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
 }
 
 function generateGenmodelAttribute(feature: EcoreFeature, className: string,  fileName: string): string {
-    // I can't find any exampels where a Attribute has createChild="true", but that might not always be the case
     let xml =
     `\n<genFeatures createChild="false" ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}" />`;
     return xml;
@@ -175,22 +174,21 @@ export function generateXML(ecoreModel : EcoreModel): string{
     return text
 }
 
-function generateGenmodelXML(model : EcoreModel): string {
+function generateGenmodelXML(model : EcoreModel, destination: string, name: string): string {
     let text = '<?xml version="1.0" encoding="UTF-8"?>';
-    let fileName = "example.ecore"; //TODO
+    let ecoreModelFileName = `${name}.ecore`;
 
-    //TODO: Figure out how to deal with all of the metadata
     text += 
     `\n<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelName="${model.name.name}"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/${destination}" modelPluginID="${name}" modelName="${model.name.name}"
     rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
     complianceLevel="5.0" copyrightFields="false" operationReflection="true" importOrganizing="true">`;
 
-    text += `\n<foreignModel>${fileName}</foreignModel>`;
-    text += `\n<genPackages prefix="Examplemodel" disposableProviderFactory="true" ecorePackage="${fileName}#/">`;
+    text += `\n<foreignModel>${ecoreModelFileName}</foreignModel>`;
+    text += `\n<genPackages prefix="Examplemodel" disposableProviderFactory="true" ecorePackage="${ecoreModelFileName}#/">`;
 
-    model.ecoreEnums.forEach(ecoreEnum => text += generateGenmodelEnum(ecoreEnum, fileName));
-    model.ecoreClasses.forEach(ecoreClass => text += generateGenmodelClass(ecoreClass, fileName));
+    model.ecoreEnums.forEach(ecoreEnum => text += generateGenmodelEnum(ecoreEnum, ecoreModelFileName));
+    model.ecoreClasses.forEach(ecoreClass => text += generateGenmodelClass(ecoreClass, ecoreModelFileName));
 
     text += "\n</genPackages>\n</genmodel:GenModel>";
 
@@ -263,8 +261,10 @@ export function generateEcore(ecoreModel: EcoreModel, filePath: string, destinat
 }
 
 export function generateGenmodel(ecoreModel: EcoreModel, filePath: string, destination: string | undefined): string {
+    const data = extractDestinationAndName(filePath, destination);
+    
     const fileNode = new CompositeGeneratorNode();
-    fileNode.append(generateGenmodelXML(ecoreModel), NL);
+    fileNode.append(generateGenmodelXML(ecoreModel, data.destination, data.name), NL);
 
     return generateModelFile(filePath, destination, ".genmodel", fileNode);
 }
