@@ -1,8 +1,7 @@
 grammar VsCore
 hidden(WS, SL_COMMENT, ML_COMMENT)
 
-
-EcoreModel: // wtf 
+EcoreModel:
     name=EcoreModelDefinition
     nsUri=NsUriDeclaration?
     (ecoreClasses+=EcoreClass | ecoreDefinitions+=EcoreDefinition | ecoreEnums+=EcoreEnum)*;
@@ -48,7 +47,7 @@ EcoreReference:
     references=ClassCrossReference | refers?='refers' references=ClassReference) (boundDefinition=BoundDefinition?)
     featureName=ID (opposite=Opposite?) ';';
 
-EcoreDefinition: // to be able to declare module and ecore url -> IN DUE TIME MAY I ADD BTW 
+EcoreDefinition: // to be able to declare module and ecore url
     name=ID properties=ID ';';
 
 ClassCrossReference:
@@ -62,7 +61,6 @@ Opposite:
 
 //terminal WORD_PERIOD_CONNECTED : /([^\s]+)/;
 
-
 terminal ARRAY_START : /\[/;
 terminal ARRAY_END : /\]/;
 
@@ -72,12 +70,13 @@ terminal CLOSEBRACKET: /}/;
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal UID : /([a-zA-z]\.)[a-zA-Z][\w_]*/;
-//terminal UID: /\?(.*)/; // same function as ID, but acceps period 
+//terminal UID: /\?(.*)/; // same function as ID, but accepts period 
 
-terminal INT returns number: /-?[0-9]+/; // allows negative and positive numbers -> should prob only allow for any 
-// positive number or -1  
+// allows negative and positive numbers
+// should probably only allow for any positive number or -1
+terminal INT returns number: /-?[0-9]+/;
+
 terminal STRING: /"[^"]*"|'[^']*'/;
-
 
 terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 terminal SL_COMMENT: /\/\/[^\n\r]*/;
