@@ -11,7 +11,7 @@ import { generateAction } from "./cli";
 let client: LanguageClient;
 
 const generateHandler = async () => {
-  let currentFilePath = vscode.window.activeTextEditor?.document.uri.path;
+  const currentFilePath = vscode.window.activeTextEditor?.document.uri.path;
 
   if (currentFilePath === undefined) {
     return;
@@ -19,8 +19,16 @@ const generateHandler = async () => {
 
   vscode.window.showInformationMessage(currentFilePath);
 
-  const generatedPath = await generateAction(currentFilePath, {});
-  vscode.window.showInformationMessage(`Generated files in: ${generatedPath}`);
+  const generatedFilePath = path.join(
+    path.dirname(currentFilePath),
+    "generated"
+  );
+
+  await generateAction(currentFilePath, { destination: generatedFilePath });
+
+  vscode.window.showInformationMessage(
+    `Generated files in: ${generatedFilePath}`
+  );
 };
 
 // This function is called when the extension is activated.
