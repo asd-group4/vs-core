@@ -52,7 +52,7 @@ References are either just plain references, marked with the `refers` keyword, o
 
 ```
 class Course {
-    refers Semester semester;
+	refers Semester semester;
 	Container<University> university;
 }
 ```
