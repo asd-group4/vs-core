@@ -258,14 +258,14 @@ export function generateXML(ecoreModel: EcoreModel): string {
   MODEL = ecoreModel;
 
   text += `\n
-    <ecore:EPackage
-      xmi:version="2.0"
-      xmlns:xmi="http://www.omg.org/XMI"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-      name="${ecoreModel.name.name}"
-      nsURI="${ecoreModel.nsUri.name}"
-      nsPrefix="${ecoreModel.name.name}"
+    <ecore:EPackage 
+      xmi:version="2.0" 
+      xmlns:xmi="http://www.omg.org/XMI" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
+      name="${ecoreModel.name.name}" 
+      nsPrefix="${ecoreModel.name.name}" 
+      nsURI="${ecoreModel.nsUri !== undefined ? ecoreModel.nsUri.name : ""}" 
     >
   `;
 

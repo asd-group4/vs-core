@@ -1,8 +1,12 @@
 {
     "name": "vs-core",
-    "displayName": "vs-core",
-    "description": "Please enter a brief description here",
-    "version": "0.0.1",
+    "displayName": "VSCore",
+    "description": "DSL for building Ecore models through code with a Java-like syntax.",
+    "version": "1.0.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hermannm/vs-core"
+    },
     "engines": {
         "vscode": "^1.56.0"
     },
@@ -12,7 +16,7 @@
     "contributes": {
         "languages": [{
             "id": "vs-core",
-            "aliases": ["vs-core", "vs-core"],
+            "aliases": ["vs-core", "vscore"],
             "extensions": [".vscore"],
             "configuration": "./language-configuration.json"
         }],
@@ -20,10 +24,26 @@
             "language": "vs-core",
             "scopeName": "source.vs-core",
             "path": "./syntaxes/vs-core.tmLanguage.json"
-        }]
+        }],
+        "commands": [
+            {
+                "command": "vs-core.generateEcoreAndGenmodel",
+                "title": "Generate Ecore and Genmodel files from your VSCore file.",
+                "category": "VSCore"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "vs-core.generateEcoreAndGenmodel",
+                    "when": "editorLangId == vs-core"
+                }
+            ]
+        }
     },
     "activationEvents": [
-        "onLanguage:vs-core"
+        "onLanguage:vs-core",
+        "onCommand:vs-core.generateEcoreAndGenmodel"
     ],
     "files": [
         "bin",

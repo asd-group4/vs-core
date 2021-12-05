@@ -6,12 +6,41 @@ import {
   ServerOptions,
   TransportKind,
 } from "vscode-languageclient/node";
+import { generateAction } from "./cli";
 
 let client: LanguageClient;
+
+const generateHandler = async () => {
+  const currentFilePath = vscode.window.activeTextEditor?.document.uri.path;
+
+  if (currentFilePath === undefined) {
+    return;
+  }
+
+  vscode.window.showInformationMessage(currentFilePath);
+
+  const generatedFilePath = path.join(
+    path.dirname(currentFilePath),
+    "generated"
+  );
+
+  await generateAction(currentFilePath, { destination: generatedFilePath });
+
+  vscode.window.showInformationMessage(
+    `Generated files in: ${generatedFilePath}`
+  );
+};
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext): void {
   client = startLanguageClient(context);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "vs-core.generateEcoreAndGenmodel",
+      generateHandler
+    )
+  );
 }
 
 // This function is called when the extension is deactivated.
