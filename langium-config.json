@@ -1,0 +1,9 @@
+{
+    "languageId": "vs-core",
+    "grammar": "src/language-server/vs-core.langium",
+    "fileExtensions": [".vscore"],
+    "out": "src/language-server/generated",
+    "textMate": {
+        "out": "syntaxes/vs-core.tmLanguage.json"
+    }
+}

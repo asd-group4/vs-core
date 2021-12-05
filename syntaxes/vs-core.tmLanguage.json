@@ -1,0 +1,51 @@
+{
+  "name": "vs-core",
+  "scopeName": "source.vs-core",
+  "fileTypes": [
+    ".vscore"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.vs-core",
+      "match": "\\b(class|Container|Containment|enum|extends|final|implements|instanceTypeName|interface|Model|nsUri|opposite|refers|required|transient|volatile)\\b"
+    },
+    {
+      "name": "keyword.symbol.vs-core",
+      "match": "(\\,|\\;|\\<|\\>)"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.vs-core",
+          "begin": "/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.vs-core"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.vs-core"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.vs-core"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.vs-core"
+        }
+      ]
+    }
+  }
+}

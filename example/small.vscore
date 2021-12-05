@@ -1,0 +1,22 @@
+Model Eksempelmodell;
+nsUri "ntnu.vscode.small";
+
+class Universitet{
+    Containment<Student[]> studenter;
+    String navn;
+}
+
+class Nasjon{
+    Containment<Student[]> innbyggere;
+}
+
+class Student{
+    Container<Universitet> universitet opposite Universitet; 
+    String navn;
+    refers Postnr postnr;
+}
+
+class Postnr{
+    int postnr; 
+    String sted;
+}

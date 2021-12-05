@@ -1,0 +1,84 @@
+Model Examplemodel;
+nsUri "ntnu.vscode.model";
+
+
+enum Season{
+	Spring, Autumn, Summer
+}
+
+class University{
+	String name;
+	Containment<Department[]> departments;	
+	Containment<Semester[]> semesters;
+}
+
+class Department{
+	Container<University> university;
+	String name;
+	Containment<Course[]> courses;
+	Containment<StudyProgram[]> studyPrograms;
+}
+
+class Semester{
+	int year;
+	Season season;
+}
+
+class StudyProgram{
+	Container<Department> department;
+	String name;
+	String code;
+
+	Containment<YearlyStudyProgram[]> classes;
+}
+
+class YearlyStudyProgram{
+	Container<StudyProgram> studyProgram;
+	Containment<SpecializationGroup[]> specializationGroups;
+	required refers Semester startSemester;	
+	Containment<CourseContainer> courses;
+}
+
+class SpecializationGroup{
+	String name;
+	required refers Semester startSemester;
+
+	Containment<Specialization[]> specializations;
+}
+
+class Specialization{
+	Container<SpecializationGroup> specializationGroup;
+	String name;
+	refers Specialization specializationDependency;
+
+	Containment<CourseContainer> courses;
+}
+
+interface CourseContainer{
+	Containment<SemesterCourses[]> semesters;
+}
+
+class SemesterCourses{
+	Containment<CourseContainer> courseContainer;
+	refers Semester semester;
+	refers Course[] mandatoryCourses;
+
+	Container<ElectiveCourseGroup[]> electiveCourseGroup;
+}
+
+class ElectiveCourseGroup{
+	refers Course[] courses;
+	int requiredFromGroup;
+}
+
+class Course{
+	String name;
+	String code;
+	float points;
+
+	String[10] bound_test1;
+	String[] bound_test2;
+	String[15,20] bound_test3;
+
+	Containment<Department> department;
+}
