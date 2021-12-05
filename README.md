@@ -3,6 +3,7 @@
 **Table of Contents**
 
 - [Introduction](#introduction)
+- [Installing and running the extension](#installing-and-running-the-extension)
 - [Language Syntax](#language-syntax)
 - [Project Structure](#project-structure)
 
@@ -11,6 +12,28 @@
 VSCore is a domain-specific language (DSL) that aims to serve as an alternative syntax to Ecore model files. The verbose XML syntax of `.ecore` files means that they are typically edited through some Eclipse plugin user interface. The goal of VSCore is to allow developers to write their models in code rather than through a plugin UI, with a syntax much akin to Java, which should be familiar to most users of Ecore.
 
 To make the developer experience as smooth as possible, this project provides an extension for VSCode to enable editing of `.vscore` files with syntax highlighting and feedback. The extension also provides a command line interface (CLI) for generating `.ecore` and `.genmodel` files from `.vscore` files. The generated files can then be used for all traditional applications of Ecore.
+
+VSCore uses the [Langium framework](https://github.com/langium/langium).
+
+## Installing and running the extension
+
+**Installing the extension:**
+
+- Download the `vs-core-1.0.0.vsix` file (located at the root of this git repository)
+- Open VSCode and navigate to the Extension pane. Click the ... menu, then the `Install from VSIX...` option, as shown below.
+
+![](./readme-img/vscode-extensions.png)
+
+- Select the downloaded `vs-core-1.0.0.vsix` file. This will install the VSCore extension in your VSCode.
+
+**Using the extension:**
+
+- Create a file ending in `.vscore`. As you type, the extension will provide syntax highlighting and feedback ([Language Syntax](#language-syntax) below provides a guide to the syntax).
+- Once you have created the `.vscore` file, you can generate `.ecore` and `.genmodel` files from it by entering the VSCode Command Pallette (`Ctrl + Shift + P` by default), and searching for VSCore. The VSCore generate command should show up as below.
+
+![](./readme-img/command-pallette.png)
+
+- The generated files will appear in a folder called `generated` in the same directory as the `.vscore` file.
 
 ## Language Syntax
 
@@ -101,4 +124,3 @@ class ElectiveCourseGroup implements CourseContainer {
 - `language-configuration.json` defines the syntax of comments and surrounding pairs, for editing VSCore files.
 - `syntaxes/vs-core.tmLanguage.json` declares the type of syntax highlighting to be used when editing VSCore files in VSCode.
 - `example` contains a couple example `.vscore` files.
-- `out` contains the JavaScript files transpiled from the TypeScript source code.
