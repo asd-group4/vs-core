@@ -19,7 +19,7 @@ VSCore uses the [Langium framework](https://github.com/langium/langium).
 
 **Installing the extension:**
 
-- Download the `vs-core-1.0.0.vsix` file (located at the root of this git repository)
+- Download the latest `.vsix` file from the [Releases page](https://github.com/hermannm/vs-core/releases).
 - Open VSCode and navigate to the Extension pane. Click the ... menu, then the `Install from VSIX...` option, as shown below.
 
 ![](./readme-img/vscode-extensions.png)
