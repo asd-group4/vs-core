@@ -19,9 +19,15 @@ export function generateEcoreClass(
 ): string {
   let ecoreClassXML = "";
 
-  ecoreClassXML += `\n\t<eClassifiers xsi:type="ecore:EClass" name="${
-    ecoreClass.name
-  }" ${ecoreClass.interface ? 'abstract="true" interface="true"' : ""}>`;
+  const interfaceAttributes = `
+    abstract="true"
+    interface="true"`;
+
+  ecoreClassXML += `
+  <eClassifiers
+    xsi:type="ecore:EClass"
+    name="${ecoreClass.name}" ${ecoreClass.interface ? interfaceAttributes : ""}
+  >`;
 
   ecoreClass.features.forEach(
     (feature) => (ecoreClassXML += generateEcoreFeature(feature, ecoreClasses))
@@ -35,7 +41,8 @@ export function generateEcoreClass(
       ))
   );
 
-  ecoreClassXML += "\n\t</eClassifiers>";
+  ecoreClassXML += `
+  </eClassifiers>`;
 
   return ecoreClassXML;
 }
@@ -50,35 +57,44 @@ export function generateEcoreFeature(
 
   if (ecoreFeature.boundDefinition != undefined) {
     if (ecoreFeature.boundDefinition.upperBound != undefined)
-      upperBound = `upperBound="${ecoreFeature.boundDefinition.upperBound}"`;
+      upperBound = `
+      upperBound="${ecoreFeature.boundDefinition.upperBound}"`;
     if (ecoreFeature.boundDefinition.lowerBound != undefined)
-      lowerBound = `lowerBound="${ecoreFeature.boundDefinition.lowerBound}"`;
+      lowerBound = `
+      lowerBound="${ecoreFeature.boundDefinition.lowerBound}"`;
   }
 
   if (ecoreFeature.required) {
-    if (lowerBound == "") lowerBound = 'lowerBound="1"';
+    if (lowerBound == "")
+      lowerBound = `
+      lowerBound="1"`;
   }
 
-  if (ecoreFeature.final) extraFeatures += 'unsettable="true"';
-  if (ecoreFeature.volatile) extraFeatures += ' volatile="true"';
-  if (ecoreFeature.transient) extraFeatures += ' transient="true"';
+  if (ecoreFeature.final)
+    extraFeatures += `
+      unsettable="true"`;
+  if (ecoreFeature.volatile)
+    extraFeatures += `
+      volatile="true"`;
+  if (ecoreFeature.transient)
+    extraFeatures += `
+      transient="true"`;
 
-  return `\n\t\t
-    <eStructuralFeatures 
-      xsi:type="ecore:EAttribute" 
-      name="${ecoreFeature.featureName}" 
-      ${upperBound} ${lowerBound} ${extraFeatures} 
-      eType="${translate_etype(ecoreFeature.name, ecoreClasses)}" 
-    />
-  `;
+  return `
+    <eStructuralFeatures
+      xsi:type="ecore:EAttribute"
+      name="${
+        ecoreFeature.featureName
+      }"${upperBound}${lowerBound}${extraFeatures}
+      eType="${translate_etype(ecoreFeature.name, ecoreClasses)}"
+    />`;
 }
 
 export function translate_etype(type: string, ecoreClasses: string[]): string {
   if (ecoreClasses.includes(type)) return `#//${type}`;
-  return `
-    ecore:EDataType 
-    http://www.eclipse.org/emf/2002/Ecore#//E${ecoreFormat(type)}
-  `;
+  return `ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//E${ecoreFormat(
+    type
+  )}`;
 }
 
 function ecoreFormat(type: string): string {
@@ -99,82 +115,81 @@ export function generateEcoreReference(
 
   if (ecoreReference.boundDefinition != undefined) {
     if (ecoreReference.boundDefinition.upperBound != undefined)
-      upperBound = `upperBound="${ecoreReference.boundDefinition.upperBound}"`;
+      upperBound = `
+      upperBound="${ecoreReference.boundDefinition.upperBound}"`;
     if (ecoreReference.boundDefinition.lowerBound != undefined)
-      lowerBound = `lowerBound="${ecoreReference.boundDefinition.lowerBound}"`;
+      lowerBound = `
+      lowerBound="${ecoreReference.boundDefinition.lowerBound}"`;
   }
 
   if (ecoreReference.required) {
-    if (lowerBound == "") lowerBound = 'lowerBound="1"';
+    if (lowerBound == "")
+      lowerBound = `
+      lowerBound="1"`;
   }
 
   let containment = "";
 
-  let opposite = "";
-
   if (!ecoreReference.refers) {
-    containment = `containment="${
-      ecoreReference.containmentType === "Containment"
-    }"`;
+    containment = `
+      containment="${ecoreReference.containmentType === "Containment"}"`;
   }
+
+  let opposite = "";
 
   if (ecoreReference.opposite != undefined) {
     opposite = findOpposite(ecoreReference, ecoreParent);
   }
 
-  return `\n
-    <eStructuralFeatures 
-      xsi:type="ecore:EReference" 
-      name="${ecoreReference.featureName}" ${upperBound} ${lowerBound} 
+  return `
+    <eStructuralFeatures
+      xsi:type="ecore:EReference"
+      name="${ecoreReference.featureName}"${upperBound}${lowerBound}
       eType="${translate_eclass_ref(
         ecoreReference.references.classReference.$refText,
         ecoreClasses
-      )}" 
-      ${containment} 
-      ${opposite} 
+      )}"${containment}${opposite}
     />`;
 }
 
 export function generateEcoreEnum(ecoreEnum: EcoreEnum): string {
-  let ecoreEnumXML = `\n
-    <eClassifiers 
-      xsi:type="ecore:EEnum" 
-      name="${ecoreEnum.name}" 
-    >
-  `;
+  let ecoreEnumXML = `
+  <eClassifiers
+    xsi:type="ecore:EEnum"
+    name="${ecoreEnum.name}"
+  >`;
 
   ecoreEnum.enumEntry.forEach((entry: EcoreEnumEntry, i: number) => {
-    ecoreEnumXML += `\n
-      <eLiterals 
-        name="${entry.name}"
-        value="${i}" 
-        literal="${entry.name.toLowerCase()}"
-      />
-    `;
+    ecoreEnumXML += `
+    <eLiterals
+      name="${entry.name}"
+      value="${i}"
+      literal="${entry.name.toLowerCase()}"
+    />`;
   });
 
-  ecoreEnumXML += "\n</eClassifiers>";
+  ecoreEnumXML += `
+  </eClassifiers>`;
 
   return ecoreEnumXML;
 }
 
 function generateGenmodelEnum(ecoreEnum: EcoreEnum, fileName: string): string {
-  let xml = `\n
-    <genEnums 
-      typeSafeEnumCompatible="false" 
-      ecoreEnum="${fileName}#//${ecoreEnum.name}" 
-    >
-  `;
+  let xml = `
+    <genEnums
+      typeSafeEnumCompatible="false"
+      ecoreEnum="${fileName}#//${ecoreEnum.name}"
+    >`;
 
   ecoreEnum.enumEntry.forEach((entry) => {
-    xml += `\n
-      <genEnumLiterals 
-        ecoreEnumLiteral="${fileName}#//${ecoreEnum.name}/${entry.name}" 
-      />
-    `;
+    xml += `
+      <genEnumLiterals
+        ecoreEnumLiteral="${fileName}#//${ecoreEnum.name}/${entry.name}"
+      />`;
   });
 
-  xml += `\n</genEnums>`;
+  xml += `
+    </genEnums>`;
 
   return xml;
 }
@@ -184,12 +199,11 @@ function generateGenmodelAttribute(
   className: string,
   fileName: string
 ): string {
-  let xml = `\n
-    <genFeatures
-      createChild="false"
-      ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}" 
-    />
-  `;
+  let xml = `
+      <genFeatures
+        createChild="false"
+        ecoreFeature="ecore:EAttribute ${fileName}#//${className}/${feature.featureName}"
+      />`;
 
   return xml;
 }
@@ -199,30 +213,30 @@ function generateGenmodelReference(
   className: string,
   fileName: string
 ): string {
-  let xml = `\n<genFeatures `;
-
-  let notify = ``;
-  let property = ``;
-  let children = ``;
-  let createChild = `createChild="false" `;
-  let propertySortChoices = ``;
+  let xml = `
+      <genFeatures`;
 
   if (!reference.refers && reference.containmentType === "Containment") {
-    property = `property="None" `;
-    children = `children="true" `;
-    createChild = `createChild="true" `;
+    xml += `
+        property="None"`;
+    xml += `
+        children="true"`;
+    xml += `
+        createChild="true"`;
   } else {
-    notify = `notify="false" `;
-    propertySortChoices = `propertySortChoices="true" `;
+    xml += `
+        notify="false"`;
+    xml += `
+        createChild="false"`;
+    xml += `
+        propertySortChoices="true"`;
   }
 
-  xml += `${notify}${property}${children}${createChild}${propertySortChoices}`;
   xml += `
-    ecoreFeature="
-      ecore:EReference 
-      ${fileName}#//${className}/${reference.featureName}
-    " 
-  />`;
+        ecoreFeature="ecore:EReference${fileName}#//${className}/${reference.featureName}"`;
+
+  xml += `
+      />`;
 
   return xml;
 }
@@ -231,13 +245,14 @@ function generateGenmodelClass(
   ecoreClass: EcoreClass,
   fileName: string
 ): string {
-  let image = ecoreClass.interface ? `image="false" ` : ``;
-  let xml = `\n
-    <genClasses 
-      ${image}
-      ecoreClass="${fileName}#//${ecoreClass.name}" 
-    >
-  `;
+  let image = ecoreClass.interface
+    ? `
+      image="false" `
+    : "";
+  let xml = `
+    <genClasses ${image}
+      ecoreClass="${fileName}#//${ecoreClass.name}"
+    >`;
 
   ecoreClass.features.forEach((feature) => {
     xml += generateGenmodelAttribute(feature, ecoreClass.name, fileName);
@@ -247,27 +262,27 @@ function generateGenmodelClass(
     xml += generateGenmodelReference(feature, ecoreClass.name, fileName);
   });
 
-  xml += `\n</genClasses>`;
+  xml += `
+    </genClasses>`;
 
   return xml;
 }
 
 export function generateXML(ecoreModel: EcoreModel): string {
-  let text = '<?xml version="1.0" encoding="UTF-8"?>';
+  let text = `<?xml version="1.0" encoding="UTF-8"?>`;
 
   MODEL = ecoreModel;
 
-  text += `\n
-    <ecore:EPackage 
-      xmi:version="2.0" 
-      xmlns:xmi="http://www.omg.org/XMI" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
-      name="${ecoreModel.name.name}" 
-      nsPrefix="${ecoreModel.name.name}" 
-      nsURI="${ecoreModel.nsUri !== undefined ? ecoreModel.nsUri.name : ""}" 
-    >
-  `;
+  text += `
+<ecore:EPackage
+  xmi:version="2.0"
+  xmlns:xmi="http://www.omg.org/XMI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+  name="${ecoreModel.name.name}"
+  nsPrefix="${ecoreModel.name.name}"
+  nsURI="${ecoreModel.nsUri !== undefined ? ecoreModel.nsUri.name : ""}"
+>`;
 
   console.log("ecore-model name : ", ecoreModel.name.name);
 
@@ -286,7 +301,8 @@ export function generateXML(ecoreModel: EcoreModel): string {
     text += generateEcoreEnum(ecoreEnum);
   });
 
-  text += "\n</ecore:EPackage>";
+  text += `
+</ecore:EPackage>`;
 
   return text;
 }
@@ -299,33 +315,32 @@ function generateGenmodelXML(
   let text = '<?xml version="1.0" encoding="UTF-8"?>';
   let ecoreModelFileName = `${name}.ecore`;
 
-  text += `\n
-    <genmodel:GenModel 
-      xmi:version="2.0" 
-      xmlns:xmi="http://www.omg.org/XMI" 
-      xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" 
-      xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" 
-      modelDirectory="/${destination}" 
-      modelPluginID="${name}" 
-      modelName="${model.name.name}" 
-      rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" 
-      importerID="org.eclipse.emf.importer.ecore" 
-      complianceLevel="5.0" 
-      copyrightFields="false" 
-      operationReflection="true" 
-      importOrganizing="true"
-    >
-  `;
+  text += `
+<genmodel:GenModel
+  xmi:version="2.0"
+  xmlns:xmi="http://www.omg.org/XMI"
+  xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+  xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+  modelDirectory="/${destination}"
+  modelPluginID="${name}"
+  modelName="${model.name.name}"
+  rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+  importerID="org.eclipse.emf.importer.ecore"
+  complianceLevel="5.0"
+  copyrightFields="false"
+  operationReflection="true"
+  importOrganizing="true"
+>`;
 
-  text += `\n<foreignModel>${ecoreModelFileName}</foreignModel>`;
+  text += `
+  <foreignModel>${ecoreModelFileName}</foreignModel>`;
 
-  text += `\n
-    <genPackages
-      prefix="Examplemodel"
-      disposableProviderFactory="true"
-      ecorePackage="${ecoreModelFileName}#/"
-    >
-  `;
+  text += `
+  <genPackages
+    prefix="Examplemodel"
+    disposableProviderFactory="true"
+    ecorePackage="${ecoreModelFileName}#/"
+  >`;
 
   model.ecoreEnums.forEach((ecoreEnum) => {
     text += generateGenmodelEnum(ecoreEnum, ecoreModelFileName);
@@ -335,7 +350,11 @@ function generateGenmodelXML(
     text += generateGenmodelClass(ecoreClass, ecoreModelFileName);
   });
 
-  text += "\n</genPackages>\n</genmodel:GenModel>";
+  text += `
+  </genPackages>`;
+
+  text += `
+</genmodel:GenModel>`;
 
   return text;
 }
@@ -352,22 +371,19 @@ function findOpposite(
     );
 
     return `
-      eOpposite="
-        #//${refClass?.name}
-        /${getEcoreClassDefinitionRefName(refClass, ecoreParent.name)}
-      "
-    `;
+      eOpposite="#//${refClass?.name}/${getEcoreClassDefinitionRefName(
+      refClass,
+      ecoreParent.name
+    )}"`;
   }
 
   return `
-    eOpposite="
-      #//${ecoreReference.opposite.oppositeClass.$refText}
-      /${getEcoreClassDefinitionRefName(
-        ecoreReference.opposite.oppositeClass.ref,
-        ecoreParent.name
-      )}
-    "
-  `;
+      eOpposite="#//${
+        ecoreReference.opposite.oppositeClass.$refText
+      }/${getEcoreClassDefinitionRefName(
+    ecoreReference.opposite.oppositeClass.ref,
+    ecoreParent.name
+  )}"`;
 }
 
 function getEcoreClassDefinition(ecoreClassName: string) {

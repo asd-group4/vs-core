@@ -17,8 +17,6 @@ const generateHandler = async () => {
     return;
   }
 
-  vscode.window.showInformationMessage(currentFilePath);
-
   const generatedFilePath = path.join(
     path.dirname(currentFilePath),
     "generated"
