@@ -39,7 +39,7 @@ VSCore uses the [Langium framework](https://github.com/langium/langium).
 
 The following section describes the various language keywords of VSCore, providing examples along the way.
 
-There are three possible top-level declarations in VSCore: `Model`, `enum`, `class` and `interface`.
+There are five possible top-level declarations in VSCore: `Model`, `nsUri`, `enum`, `class` and `interface`.
 
 ### Model
 
